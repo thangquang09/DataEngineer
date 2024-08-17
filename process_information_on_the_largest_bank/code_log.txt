@@ -1,0 +1,33 @@
+2024-Aug-03-01:34:52 : Connected to Database! Ready for process.
+2024-Aug-03-01:34:57 : Data Extracted Completely, ready for tranformation.
+2024-Aug-03-01:34:57 : Data Transformated Completely, loading to csv.
+2024-Aug-03-01:34:57 : Loaded to csv, loading to database.
+2024-Aug-03-01:34:57 : Data Loading Succesfully, loading query statement.
+2024-Aug-03-01:35:23 : Connected to Database! Ready for process.
+2024-Aug-03-01:35:24 : Data Extracted Completely, ready for tranformation.
+2024-Aug-03-01:35:24 : Data Transformated Completely, loading to csv.
+2024-Aug-03-01:35:24 : Loaded to csv, loading to database.
+2024-Aug-03-01:35:24 : Data Loading Succesfully, loading query statement.
+2024-Aug-03-01:35:24 : Process End.
+2024-Aug-03-01:35:45 : Connected to Database! Ready for process.
+2024-Aug-03-01:35:46 : Data Extracted Completely, ready for tranformation.
+2024-Aug-03-01:35:46 : Data Transformated Completely, loading to csv.
+2024-Aug-03-01:35:46 : Loaded to csv, loading to database.
+2024-Aug-03-01:35:46 : Data Loading Succesfully, loading query statement.
+2024-Aug-03-01:35:46 : Process End.
+2024-Aug-03-01:39:26 : Connected to Database! Ready for process.
+2024-Aug-03-01:39:27 : Data Extracted Completely, ready for tranformation.
+2024-Aug-03-01:39:27 : Data Transformated Completely, loading to csv.
+2024-Aug-03-01:39:27 : Loaded to csv, loading to database.
+2024-Aug-03-01:39:27 : Data Loading Succesfully, loading query statement.
+2024-Aug-03-01:39:27 : Process End.
+2024-Aug-03-01:42:10 : Connected to Database! Ready for process.
+2024-Aug-03-01:42:13 : Data Extracted Completely, ready for tranformation.
+2024-Aug-03-01:42:13 : Data Transformated Completely, loading to csv.
+2024-Aug-03-01:42:13 : Loaded to csv, loading to database.
+2024-Aug-03-01:42:13 : Data Loading Succesfully, loading query statement.
+2024-Aug-03-01:42:13 : Process End.
+2024-Aug-09-17:57:26 : Connected to Database! Ready for process.
+2024-Aug-09-17:57:27 : Data Extracted Completely, ready for tranformation.
+2024-Aug-09-17:58:38 : Connected to Database! Ready for process.
+2024-Aug-09-17:58:39 : Data Extracted Completely, ready for tranformation.
