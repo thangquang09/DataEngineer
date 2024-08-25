@@ -51,6 +51,20 @@
       - [3.6.4.3. Examples](#3643-examples)
   - [3.7. Data Pipeline Tools and Technologies](#37-data-pipeline-tools-and-technologies)
     - [3.7.1. Open-source Tools](#371-open-source-tools)
+- [4. Apache Airflow](#4-apache-airflow)
+  - [4.1. Apache Airflow Architecture](#41-apache-airflow-architecture)
+  - [4.2. Lifecycle Apache Airflow task](#42-lifecycle-apache-airflow-task)
+  - [4.3 Features of Apache Airflow](#43-features-of-apache-airflow)
+  - [4.4. Apache Airflow principles](#44-apache-airflow-principles)
+  - [4.4. Advantages of Representing Data Pipeline as DAGs in Apache Airflow](#44-advantages-of-representing-data-pipeline-as-dags-in-apache-airflow)
+    - [4.4.1. What is DAGs?](#441-what-is-dags)
+    - [4.4.2. Python Script for DAGs](#442-python-script-for-dags)
+  - [4.5. Apache Airflow UI](#45-apache-airflow-ui)
+    - [4.5.1. Chế Độ Xem DAGs:](#451-chế-độ-xem-dags)
+    - [4.5.2. DAGs Visualization](#452-dags-visualization)
+    - [4.5.3. DAG Structure and Operators](#453-dag-structure-and-operators)
+    - [4.5.4. CLI](#454-cli)
+  - [4.6. Practice](#46-practice)
 
 
 
@@ -226,7 +240,7 @@ Sử dụng khi bạn muốn bắt đầu theo dõi các giao dịch trong một
 
 Ví dụ: Một công ty bán lẻ quyết định triển khai một data warehouse mới để theo dõi lịch sử bán hàng của họ trong 10 năm qua. Công ty này có hàng triệu bản ghi giao dịch từ các hệ thống bán lẻ trước đó. Họ quyết định sử dụng phương pháp Full Loading để tải toàn bộ dữ liệu lịch sử vào data warehouse mới. Quá trình này chỉ diễn ra một lần, và sau khi hoàn thành, toàn bộ lịch sử giao dịch được lưu trữ trong kho dữ liệu.
 
-**INCREMENtAL LOADING**
+**INCREMENTAL LOADING**
 
 Dữ liệu được thêm vào cơ sở dữ liệu mà không ghi đè lên các dữ liệu đã có. Điều này hữu ích trong việc tích lũy lịch sử giao dịch. Tải dữ liệu tăng dần có thể được phân loại thành Stream Loading và Batch Loading.
 
@@ -839,4 +853,248 @@ Có rất nhiều công cụ pipeline dữ liệu mã nguồn mở và thương 
 4. `Talend Open Studio`: Một nền tảng phát triển và triển khai pipeline dữ liệu mã nguồn mở hỗ trợ di chuyển dữ liệu lớn, kho dữ liệu, và phân tích. Talend có giao diện đồ họa kéo và thả cho phép bạn tạo các pipeline ETL mà không cần viết mã.
 
     `Ví dụ`: Sử dụng Talend để chuyển đổi và tải dữ liệu từ các hệ thống ERP vào kho dữ liệu để phân tích.
+
+# 4. Apache Airflow
+
+Apache Airflow là một công cụ điều phối luồng công việc mã nguồn mở tuyệt vời, được hỗ trợ bởi một cộng đồng sôi nổi. Nền tảng này cho phép bạn xây dựng và chạy các luồng công việc, như là các pipeline dữ liệu hàng loạt (batch data pipelines). Với Apache Airflow, một luồng công việc được biểu diễn dưới dạng đồ thị có hướng không tuần hoàn (DAG). DAG được tạo thành từ các nhiệm vụ (tasks) được sắp xếp theo một thứ tự thực thi nhất định.
+
+**Điều cần lưu ý:** Apache Airflow không phải là giải pháp truyền dữ liệu theo luồng. Airflow là công cụ quản lý luồng công việc, không phải là giải pháp truyền dữ liệu hay sự kiện theo thời gian thực.
+
+## 4.1. Apache Airflow Architecture
+
+![alt text](apacheairflowarchitecture.png)
+
+Trong đó:
+
+- **Scheduler (Trình lập lịch)**: Thành phần này đảm nhiệm việc kích hoạt tất cả các luồng công việc đã lên lịch. Nó chịu trách nhiệm gửi các nhiệm vụ riêng lẻ từ mỗi luồng công việc đã lên lịch đến executor
+- **Executor (Trình thực thi):** Thành phần này xử lý việc chạy các nhiệm vụ bằng cách chỉ định chúng cho workers (công nhân), những người sẽ thực thi các nhiệm vụ này.
+- **Web Server (Máy chủ Web):** Cung cấp một giao diện người dùng đồ họa dễ sử dụng. Từ giao diện này, bạn có thể kiểm tra, kích hoạt và gỡ lỗi bất kỳ DAG nào và các nhiệm vụ cụ thể của nó.
+- **DAG Directory (Thư mục DAG):** Chứa tất cả các tệp DAG, sẵn sàng để được truy cập bởi scheduler, executor, và các worker.
+- **Metadata Database (Cơ sở dữ liệu metadata):** Được sử dụng bởi scheduler, executor, và web server để lưu trữ trạng thái của mỗi DAG và các nhiệm vụ của nó.
+
+Ví dụ về DAG: Một DAG có thể bao gồm các nhiệm vụ như nhập dữ liệu, phân tích dữ liệu, lưu trữ dữ liệu, tạo báo cáo, và kích hoạt các hệ thống khác, chẳng hạn như gửi email báo cáo lỗi.
+
+![DAG example](dag_example.png)
+
+## 4.2. Lifecycle Apache Airflow task
+
+![lifecycle](lifecycle_apacheairflow.png)
+
+- **No status (Chưa có trạng thái)**: Nhiệm vụ chưa được lên lịch để thực thi.
+- **Scheduled (Đã lên lịch)**: Scheduler đã xác định rằng các phụ thuộc của nhiệm vụ đã được đáp ứng và đã lên lịch cho nhiệm vụ chạy.
+- **Removed (Đã bị xóa)**: Nhiệm vụ đã biến mất khỏi DAG kể từ khi chạy bắt đầu.
+- **Upstream failed (Phụ thuộc trước đã thất bại)**: Một nhiệm vụ trước đó đã thất bại.
+- **Queued (Đã được đưa vào hàng đợi)**: Nhiệm vụ đã được chỉ định cho executor và đang chờ một worker có sẵn.
+- **Running (Đang chạy)**: Nhiệm vụ đang được thực thi bởi một worker.
+- **Success (Thành công)**: Nhiệm vụ đã hoàn thành mà không gặp lỗi.
+- **Failed (Thất bại)**: Nhiệm vụ không thể hoàn thành thành công do gặp lỗi.
+- **Up for retry (Đang chờ thử lại)**: Nhiệm vụ sẽ được lên lịch lại theo cấu hình thử lại.
+
+## 4.3 Features of Apache Airflow
+
+- **Pure Python**: Tạo các luồng công việc sử dụng Python, giúp bạn duy trì sự linh hoạt hoàn toàn khi xây dựng pipeline dữ liệu.
+
+- **Useful UI (Giao diện người dùng hữu ích)**: Giao diện người dùng cho phép bạn giám sát, lập lịch hoặc thực thi luồng công việc thủ công, và quản lý các luồng công việc thông qua một ứng dụng web tinh vi, cung cấp cái nhìn tổng quan về trạng thái của các nhiệm vụ.
+
+- **Integration (Tích hợp)**: Apache Airflow cung cấp nhiều tích hợp plug-and-play, chẳng hạn như IBM Data Band, giúp đạt được khả năng quan sát và giám sát liên tục.
+
+- **Ease of use (Dễ sử dụng)**: Dễ dàng tạo và triển khai một luồng công việc cho bất kỳ ai có kiến thức về Python. Airflow cho phép bạn kết hợp nhiều nhiệm vụ được tạo ra với các tùy chọn khác nhau của operators và sensors mà không bị giới hạn.
+
+- **Open Source (Mã nguồn mở)**: Airflow là mã nguồn mở, do đó bạn có thể chia sẻ các cải tiến của mình bằng cách mở một pull request. Cộng đồng Apache Airflow rất năng động, với nhiều người dùng đang chia sẻ kinh nghiệm của họ.
+
+## 4.4. Apache Airflow principles
+
+- **Scalable (Có thể mở rộng)**: Airflow có kiến trúc module và sử dụng message queue để điều phối số lượng workers không giới hạn, sẵn sàng mở rộng đến vô tận.
+
+- **Dynamic (Động)**: Các pipeline của Airflow được định nghĩa bằng Python, cho phép tạo pipeline một cách động với nhiều nhiệm vụ đồng thời.
+
+- **Extensible (Có thể mở rộng)**: Bạn có thể dễ dàng định nghĩa các operators của riêng mình và mở rộng thư viện để phù hợp với môi trường của bạn.
+
+- **Lean (Gọn nhẹ)**: Các pipeline của Airflow được thiết kế gọn nhẹ và rõ ràng, với khả năng tham số hóa được tích hợp sẵn thông qua công cụ Jinja templating mạnh mẽ.
+
+## 4.4. Advantages of Representing Data Pipeline as DAGs in Apache Airflow
+
+### 4.4.1. What is DAGs?
+
+DAG là một loại đồ thị đặc biệt. Đồ thị đơn giản bao gồm các nút (nodes) và cạnh (edges) như hình minh họa. Trong đó, các vòng tròn được gọi là nút, và các đường nối giữa các cặp nút được gọi là cạnh. Đồ thị có hướng (directed graph) cũng là một đồ thị, nhưng có cấu trúc phức tạp hơn. Mỗi cạnh có một hướng cụ thể, kết nối một nút bắt đầu với một nút khác. `Phần acyclic có nghĩa là không có vòng lặp hoặc chuỗi các cạnh có hướng quay trở lại một nút trong chuỗi`.
+
+![Example of DAG](dags_example.png)
+
+Ví dụ về DAGs:
+
+- **DAG đơn giản**: DAG đơn giản nhất có một cạnh hướng duy nhất, với một nút gốc và một nút cuối.
+- **DAG phức tạp hơn**: DAG phức tạp hơn có thể có nhiều nút gốc hoặc nhiều nút cuối.
+- **Cây (tree)**: Một dạng DAG phổ biến, được dùng để biểu diễn cây gia đình hoặc cấu trúc thư mục. Tất cả các cây đều là DAGs, nhưng không phải tất cả DAGs đều là cây.
+
+DAGs được sử dụng để đại diện cho các luồng công việc hoặc pipelines trong Apache Airflow.` Mỗi nhiệm vụ trong pipeline của bạn được biểu diễn dưới dạng một nút trong DAG`, trong khi các phụ thuộc giữa hai nhiệm vụ được biểu diễn dưới dạng cạnh có hướng. Nói cách khác, `các cạnh xác định thứ tự mà các nhiệm vụ cần được thực thi`. Vì vậy, DAGs trong Airflow được sử dụng để xác định các nhiệm vụ cần chạy và thứ tự thực hiện chúng.
+
+### 4.4.2. Python Script for DAGs
+
+DAG được định nghĩa trong một tập lệnh Python, đại diện cho cấu trúc của DAG, do đó, các nhiệm vụ và các phụ thuộc của chúng được định nghĩa dưới dạng mã. Các hướng dẫn lập lịch cũng được chỉ định dưới dạng mã trong tập lệnh DAG.
+
+Thành phần của DAGs:
+- **Nút (Nodes)**: Mỗi nhiệm vụ được thực hiện trong DAG cũng được viết bằng Python. Mỗi nhiệm vụ thực thi một operator. Ví dụ: Python operator dùng để triển khai một đoạn mã Python, SQL operator để chạy một truy vấn SQL, và bash operator để chạy một lệnh bash.
+- **Sensors**: Là một loại operator được sử dụng để kiểm tra điều kiện hoặc thời gian. Ví dụ: bạn có thể sử dụng sensor để kiểm tra mỗi 30 giây xem tệp có tồn tại hay một DAG khác đã hoàn thành hay chưa.
+
+**CẤU TRÚC CỦA MỘT TẬP LỆNH CHUẨN**
+
+1. Library Imports: Nhập các thư viện Python cần thiết.
+2. DAG Arguments: Định nghĩa các đối số mặc định cho DAG, chẳng hạn như ngày bắt đầu mặc định.
+3. DAG Definition: Định nghĩa DAG hoặc khởi tạo DAG.
+4. Task Definitions: Định nghĩa các nhiệm vụ cụ thể trong DAG.
+5. Task Pipeline: Định nghĩa phụ thuộc giữa các nhiệm vụ, tạo thành chuỗi nhiệm vụ.
+
+```python
+# Import các thư viện cần thiết
+from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
+from datetime import datetime, timedelta
+
+# Định nghĩa các đối số mặc định cho DAG
+default_args = {
+  'owner':'airflow',
+  'depends_on_past':False,
+  'start_date':datetime(2024, 8, 25),
+  'email_on_failure':False,
+  'email_on_retry':False,
+  'retires':1,
+  'retry_delay':timedelta(minutes=5),
+}
+
+# Khởi tạo DAG
+dag = DAG(
+  'example_dag',
+  default_args=default_args,
+  description='Một ví dụ về DAG trong Apache Airflow',
+  schedule_interval=timedelta(days=1),
+)
+
+# Định nghĩa các nhiệm vụ trong DAG
+## task1: in ra Hello World!
+task1 = BashOperator(
+  task_id='print_hello',
+  bash_command='echo "Hello World!"',
+  dag=dag
+)
+
+## task2: đếm số file trong thư mục /tmp
+task2 = BashOperator(
+  task_id='count_files',
+  bash_command='ls -l /tmp | wc -l',
+  dag=dag
+)
+
+# Định nghĩa thứ tự thực hiện các task
+task1 >> task2
+```
+
+## 4.5. Apache Airflow UI
+
+Giao diện người dùng của Apache Airflow là một công cụ mạnh mẽ giúp bạn dễ dàng quản lý và giám sát các luồng công việc (workflows) của mình. Khi bạn truy cập giao diện này trên trình duyệt, mặc định nó sẽ hiển thị chế độ xem DAGs.
+
+### 4.5.1. Chế Độ Xem DAGs:
+
+Đây là một bảng chứa thông tin về tất cả các DAG trong môi trường của bạn.
+Mỗi hàng hiển thị các thông tin tương tác về một DAG, chẳng hạn như tên DAG, chủ sở hữu DAG, trạng thái của các tác vụ trong lần chạy DAG hiện tại hoặc gần nhất, lịch chạy DAG (theo định dạng crontab), trạng thái của tất cả các lần chạy trước đó, thời gian của lần chạy gần nhất và lần chạy kế tiếp, và các liên kết nhanh để tìm hiểu thêm thông tin chi tiết về DAG đó.
+Ví dụ thực tế:
+
+Giả sử bạn có một DAG có tên là `example_bash_operator`. DAG này đang chạy, trong khi các DAG khác hiện đang tạm dừng. Bạn có thể dễ dàng nhấn nút để dừng hoặc khởi động lại bất kỳ DAG nào ngay từ chế độ xem này.
+
+![apache airflow ui](apache_airflow_UI.png)
+
+### 4.5.2. DAGs Visualization
+
+Bạn có thể trực quan hóa các DAGs bằng nhiều cách khác nhau trong giao diện người dùng của Apache Airflow.
+
+**Chế Độ Xem Grid (Lưới):**
+
+Khi bạn chọn tên của một DAG, chế độ xem Grid của DAG đó sẽ mở ra.
+Chế độ này hiển thị dòng thời gian về trạng thái của DAG và các tác vụ của nó trong từng lần chạy.
+Mỗi trạng thái được mã hóa màu theo một chú giải hiển thị trong giao diện.
+
+![grid views](grid_view.png)
+
+![view](grid_view2.png)
+
+**Chế Độ Xem Graph (Đồ Thị):**
+
+Đây là nơi bạn có thể thấy các tác vụ và sự phụ thuộc giữa chúng trong DAG.
+Ví dụ: Một DAG có hai tác vụ print_hello và execute_function, trong đó execute_function phụ thuộc vào việc print_hello phải được thực hiện trước.
+Mỗi tác vụ được mã hóa màu theo loại operator của nó (bash operator, Python operator,...).
+
+![graph view](graph_view.png)
+
+### 4.5.3. DAG Structure and Operators
+
+[DAG Structure and Operators](!https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkLzhodDJqTlU1QW9xQUpSYkZwbTY3Q3cvQWlyZmxvd0RBR1N0cnVjdHVyZUFuZE9wZXJhdG9ycy12MS5tZCIsInRvb2xfdHlwZSI6Imluc3RydWN0aW9uYWwtbGFiIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3MTgzNTcwNjN9.PC7Bfk6Nov5g3TQmb-ubAfQQUlxShfQR6RLQ9FrJxFk)
+
+
+### 4.5.4. CLI
+
+- Liệt kê các DAGs:
+```bash
+airflow dags list
+```
+
+- Liệt kê hết các tag của một DAG cụ thể:
+```bash
+airflow tasks list example_bash_operator
+```
+Câu lệnh trên liệt kê các task của DAG có tên `example_bash_operator`.
+
+- Cho phép một DAG cụ thể hoạt động:
+```bash
+airflow dags unpause tutorial
+```
+
+- Dừng hoạt động một DAG cụ thể:
+```bash
+airflow dags pause tutorial
+```
+
+Hai câu lệnh trên thực thi với DAG có tên `tutorial`.
+
+## 4.6. Practice
+
+Write a DAG named ETL_Server_Access_Log_Processing that will extract a file from a remote server and then transform the content and load it into a file.
+
+The file URL is given below:
+
+https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/web-server-access-log.txt
+
+The server access log file contains these fields.
+
+a. timestamp - TIMESTAMP
+
+b. latitude - float
+
+c. longitude - float
+
+d. visitorid - char(37)
+
+e. accessed_from_mobile - boolean
+
+f. browser_code - int
+
+Tasks
+
+1. Add tasks in the DAG file to download the file, read the file, and extract the fields timestamp and visitorid from the web-server-access-log.txt.
+
+2. Capitalize the visitorid for all the records and store it in a local variable.
+
+3. Load the data into a new file capitalized.txt.
+
+4. Create the imports block.
+
+5. Create the DAG Arguments block. You can use the default settings.
+
+6. Create the DAG definition block. The DAG should run daily.
+
+7. Create the tasks extract, transform, and load to call the Python script.
+
+8. Create the task pipeline block.
+
+9. Submit the DAG.
+
+10. Verify if the DAG is submitted.
 
