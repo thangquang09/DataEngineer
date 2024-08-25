@@ -43,8 +43,65 @@ def extract():
     print("Extracting")
     with open(input_file, 'r') as infile, open(extracted_file, 'w') as outfile:
         for line in infile:
-            fileds = line.split('#')
-            print(fileds)
+            fields = line.split('#')
+            if len(fields) >= 4:
+                field_1 = fields[0]
+                field_4 = fields[3]
+                outfile.write(field_1 + '#' + field_4 + '\n')
 
-download_file()
-extract()
+def transform():
+    global extracted_file, transformed_file
+    print("Transforming")
+    with open(extracted_file, 'r') as infile, open(transformed_file, 'w') as outfile:
+        for line in infile:
+            processed_line = line.upper()
+            outfile.write(processed_line + '\n')
+
+def load():
+    global transformed_file, output_file
+    print("Loading")
+    with open(transformed_file, 'r') as infile, open(output_file, 'w') as outfile:
+        for line in infile:
+            outfile.write(line + '\n')
+
+def check():
+    global output_file
+    print("Checking")
+    with open(output_file, 'r') as f:
+        lines = f.readlines()
+        for line in lines[:5]:
+            print(line)
+
+# Tạo các task
+download = PythonOperator(
+    task_id='download_file',
+    python_callable=download_file,
+    dag=dag,
+)
+
+extract = PythonOperator(
+    task_id='extract_data',
+    python_callable=extract,
+    dag=dag,
+)
+
+transform = PythonOperator(
+    task_id='transform_data',
+    python_callable=transform,
+    dag=dag,
+)
+
+load = PythonOperator(
+    task_id='load_data',
+    python_callable=load,
+    dag=dag,
+)
+
+check = PythonOperator(
+    task_id='check_data',
+    python_callable=check,
+    dag=dag,
+)
+
+# Xác định thứ tự thực hiện các task
+download >> extract >> transform >> load >> check
