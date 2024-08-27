@@ -1,25 +1,28 @@
 # import thư viện
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
 import requests
+import os
+
+folder_path = '/home/thangquang/CODE/DataEngineer/ETL and Data Pipelines with Shell, Airflow and Kafka'
 
 # Định nghĩa các đối số mặc định cho DAG
 default_args = {
-    'owner':'airflow',
-    'depends_on_past':False,
-    'start_date':datetime(2024, 8, 25),
-    'email_on_failure':False,
-    'email_on_retry':False,
-    'retires':1,
-    'retry_delay':timedelta(minutes=5),
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'start_date': datetime(2024, 8, 25),
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
 }
 
-input_file = 'web-server-access-log.txt'
-extracted_file = 'extracted-data.txt'
-transformed_file = 'transformed-data.txt'
-output_file = 'output-data.txt'
+input_file = os.path.join(folder_path, 'web-server-access-log.txt')
+extracted_file = os.path.join(folder_path, 'extracted-data.txt')
+transformed_file = os.path.join(folder_path, 'transformed-data.txt')
+output_file = os.path.join(folder_path, 'output-data.txt')
 
 # Khởi tạo DAG
 dag = DAG(
@@ -39,7 +42,6 @@ def download_file():
     print(f"File downloaded successfully: {input_file}")
 
 def extract():
-    global input_file, transformed_file
     print("Extracting")
     with open(input_file, 'r') as infile, open(extracted_file, 'w') as outfile:
         for line in infile:
@@ -50,7 +52,6 @@ def extract():
                 outfile.write(field_1 + '#' + field_4 + '\n')
 
 def transform():
-    global extracted_file, transformed_file
     print("Transforming")
     with open(extracted_file, 'r') as infile, open(transformed_file, 'w') as outfile:
         for line in infile:
@@ -58,14 +59,12 @@ def transform():
             outfile.write(processed_line + '\n')
 
 def load():
-    global transformed_file, output_file
     print("Loading")
     with open(transformed_file, 'r') as infile, open(output_file, 'w') as outfile:
         for line in infile:
             outfile.write(line + '\n')
 
 def check():
-    global output_file
     print("Checking")
     with open(output_file, 'r') as f:
         lines = f.readlines()
@@ -73,35 +72,36 @@ def check():
             print(line)
 
 # Tạo các task
-download = PythonOperator(
+download_task = PythonOperator(
     task_id='download_file',
     python_callable=download_file,
     dag=dag,
 )
 
-extract = PythonOperator(
+extract_task = PythonOperator(
     task_id='extract_data',
     python_callable=extract,
     dag=dag,
 )
 
-transform = PythonOperator(
+transform_task = PythonOperator(
     task_id='transform_data',
     python_callable=transform,
     dag=dag,
 )
 
-load = PythonOperator(
+load_task = PythonOperator(
     task_id='load_data',
     python_callable=load,
     dag=dag,
 )
 
-check = PythonOperator(
+check_task = PythonOperator(
     task_id='check_data',
     python_callable=check,
     dag=dag,
 )
 
-# Xác định thứ tự thực hiện các task
-download >> extract >> transform >> load >> check
+# Xác định thứ tự thực hiện cá
+
+download_task >> extract_task >> transform_task >> load_task >> check_task
