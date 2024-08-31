@@ -65,6 +65,17 @@
     - [4.5.3. DAG Structure and Operators](#453-dag-structure-and-operators)
     - [4.5.4. CLI](#454-cli)
   - [4.6. Practice](#46-practice)
+- [5. Apache Kafka](#5-apache-kafka)
+  - [5.1. Event](#51-event)
+    - [5.1.1. Data type of Event](#511-data-type-of-event)
+    - [5.1.2. Streaming Event](#512-streaming-event)
+    - [5.1.3. Quản lý nguồn và đích Event](#513-quản-lý-nguồn-và-đích-event)
+  - [5.1.4. Event Streaming Platform (ESP)](#514-event-streaming-platform-esp)
+- [5.2. What is Apache Kafka?](#52-what-is-apache-kafka)
+  - [5.2.1. Architecture of Apache Kafka](#521-architecture-of-apache-kafka)
+  - [5.2.2. Apache Kafka Features](#522-apache-kafka-features)
+  - [5.2.3. Apache Kafka Applications](#523-apache-kafka-applications)
+- [5.3. Hands-on](#53-hands-on)
 
 
 
@@ -1097,4 +1108,195 @@ Tasks
 9. Submit the DAG.
 
 10. Verify if the DAG is submitted.
+
+[Code](ETL_Server_Access_Log_Processing.py)
+
+# 5. Apache Kafka
+
+## 5.1. Event
+
+Một sự kiện thường có nghĩa là có điều gì đó đáng chú ý đang diễn ra. Trong bối cảnh streaming sự kiện, một sự kiện là một loại dữ liệu mô tả các cập nhật trạng thái có thể quan sát được của một thực thể theo thời gian. Ví dụ, các tọa độ GPS của một chiếc xe đang di chuyển, nhiệt độ của một phòng, các đo lường huyết áp của một bệnh nhân, hoặc việc sử dụng RAM của một ứng dụng đang chạy.
+
+### 5.1.1. Data type of Event
+
+Là một loại dữ liệu đặc biệt, sự kiện có nhiều định dạng khác nhau. Hãy cùng xem ba định dạng phổ biến nhất. Sự kiện có thể là một loại dữ liệu nguyên thủy như văn bản thuần, số, hoặc ngày tháng, hoặc sự kiện có thể ở định dạng key-value, và giá trị của nó có thể là một loại dữ liệu nguyên thủy, hoặc loại dữ liệu phức tạp như list, tuple, JSON, XML, hoặc thậm chí là bytes. Ví dụ, các tọa độ GPS của một chiếc xe với car_id_1 dưới dạng tuple. Ngoài ra, rất thường xuyên, một sự kiện có thể đi kèm với dấu thời gian để làm cho nó nhạy cảm về thời gian. Ví dụ, huyết áp của một bệnh nhân với ID pt001 dưới dạng tuple.
+
+Ví dụ: 
+
+```python
+cars = {
+  'car_id_1': (123, 100)
+}
+```
+
+### 5.1.2. Streaming Event
+
+Tiếp theo, chúng ta sẽ tìm hiểu kỹ hơn về streaming sự kiện. Giả sử chúng ta có một nguồn sự kiện như một nhóm cảm biến, một thiết bị giám sát, một cơ sở dữ liệu, hoặc một ứng dụng đang chạy. Nguồn sự kiện này có thể liên tục tạo ra một lượng lớn sự kiện trong khoảng thời gian ngắn hoặc gần như theo thời gian thực. Những sự kiện theo thời gian thực này cần được truyền đến một đích sự kiện, chẳng hạn như hệ thống tệp, một cơ sở dữ liệu bên ngoài khác, hoặc một ứng dụng.
+
+Quá trình truyền sự kiện liên tục giữa một nguồn sự kiện và một đích sự kiện được gọi là streaming sự kiện. Sau khi bạn đã học về quy trình ETL, bạn có thể nghĩ rằng việc triển khai quy trình ETL giữa một nguồn sự kiện và một đích sự kiện sẽ đơn giản. Tuy nhiên, điều gì sẽ xảy ra nếu chúng ta có nhiều nguồn sự kiện và đích sự kiện khác nhau? Trong thực tế, streaming sự kiện có thể rất phức tạp với nhiều nguồn sự kiện và đích sự kiện phân tán, khi các pipeline truyền dữ liệu có thể dựa trên các giao thức truyền thông khác nhau, chẳng hạn như FTP (File Transfer Protocol), HTTP (Hypertext Transfer Protocol), JDBC (Java Database Connectivity), SCP (Secure Copy), và nhiều giao thức khác.
+
+### 5.1.3. Quản lý nguồn và đích Event
+
+Quá trình truyền sự kiện liên tục giữa một nguồn sự kiện và một đích sự kiện được gọi là streaming sự kiện. Sau khi bạn đã học về quy trình ETL, bạn có thể nghĩ rằng việc triển khai quy trình ETL giữa một nguồn sự kiện và một đích sự kiện sẽ đơn giản. Tuy nhiên, điều gì sẽ xảy ra nếu chúng ta có nhiều nguồn sự kiện và đích sự kiện khác nhau? Trong thực tế, streaming sự kiện có thể rất phức tạp với nhiều nguồn sự kiện và đích sự kiện phân tán, khi các pipeline truyền dữ liệu có thể dựa trên các giao thức truyền thông khác nhau, chẳng hạn như FTP (File Transfer Protocol), HTTP (Hypertext Transfer Protocol), JDBC (Java Database Connectivity), SCP (Secure Copy), và nhiều giao thức khác.
+
+Chi tiết hơn:
+
+**Hệ thống IoT trong thành phố thông minh**
+
+Bối cảnh: Trong một thành phố thông minh, hệ thống IoT (Internet of Things) được sử dụng để giám sát nhiều yếu tố khác nhau như giao thông, chất lượng không khí, và hệ thống cấp nước. Các cảm biến được lắp đặt khắp thành phố để thu thập dữ liệu theo thời gian thực.
+
+- **Thách thức**:
+
+  1. Sự đa dạng của nguồn sự kiện:
+
+    - Cảm biến giao thông: Gửi dữ liệu về mật độ xe cộ, tốc độ trung bình, và tình trạng đèn giao thông.
+    - Cảm biến chất lượng không khí: Gửi dữ liệu về mức độ ô nhiễm, nồng độ CO2, và các chỉ số chất lượng không khí khác.
+    - Cảm biến cấp nước: Gửi dữ liệu về áp suất nước, mức độ tiêu thụ nước, và tình trạng rò rỉ.
+    - Mỗi loại cảm biến có giao thức truyền thông riêng (như HTTP, MQTT, hoặc CoAP) và định dạng dữ liệu khác nhau (JSON, XML, hoặc dạng số đơn giản).
+
+  2. Sự đa dạng của đích sự kiện:
+
+    - Hệ thống điều khiển giao thông: Nhận dữ liệu từ cảm biến giao thông để điều chỉnh đèn giao thông và đưa ra cảnh báo kẹt xe.
+    - Hệ thống cảnh báo sức khỏe cộng đồng: Nhận dữ liệu từ cảm biến chất lượng không khí để cảnh báo người dân về tình trạng ô nhiễm không khí.
+    - Hệ thống quản lý nước: Nhận dữ liệu từ cảm biến cấp nước để theo dõi tình trạng sử dụng nước và phát hiện rò rỉ.
+  
+  3. Thách thức về giao tiếp và tích hợp:
+
+    - Tích hợp nguồn và đích sự kiện: Mỗi đích sự kiện cần nhận dữ liệu từ nhiều nguồn khác nhau với các yêu cầu về thời gian thực khác nhau. Việc kết nối trực tiếp từng nguồn với từng đích sẽ dẫn đến một hệ thống phức tạp, khó bảo trì và dễ gặp lỗi.
+    - Xử lý và chuyển đổi dữ liệu: Dữ liệu từ các nguồn có thể cần được chuyển đổi hoặc xử lý trước khi gửi đến đích. Ví dụ, dữ liệu từ cảm biến giao thông có thể cần được tổng hợp để đưa ra báo cáo tổng quát hoặc phân tích xu hướng.
+
+- **Giải pháp**: Một nền tảng xử lý sự kiện trung gian như Apache Kafka hoặc Amazon Kinesis có thể được sử dụng để đơn giản hóa việc quản lý này. Thay vì kết nối từng nguồn sự kiện trực tiếp với đích sự kiện, tất cả các nguồn chỉ cần gửi dữ liệu đến nền tảng này. Nền tảng này sẽ xử lý dữ liệu, lưu trữ tạm thời và phân phối dữ liệu đến các đích sự kiện tương ứng.
+
+- **Kết quả**: Nền tảng xử lý sự kiện giúp giảm thiểu phức tạp trong việc quản lý các kết nối giữa nguồn và đích sự kiện, đồng thời cải thiện khả năng mở rộng, bảo trì và quản lý hệ thống.
+
+## 5.1.4. Event Streaming Platform (ESP)
+
+Một ESP hoạt động như một lớp trung gian giữa các nguồn sự kiện và đích sự kiện khác nhau và cung cấp một giao diện thống nhất để xử lý ETL dựa trên sự kiện. Như vậy, tất cả các nguồn sự kiện chỉ cần gửi sự kiện đến ESP thay vì gửi chúng đến từng đích sự kiện riêng lẻ. Mặt khác, các đích sự kiện chỉ cần đăng ký với ESP và chỉ cần tiêu thụ sự kiện được gửi từ ESP thay vì từ từng nguồn sự kiện riêng lẻ.
+
+**CÁC THÀNH PHẦN CỦA ESP**
+
+Các ESP khác nhau có thể có kiến trúc và thành phần khác nhau. Dưới đây là một số thành phần phổ biến có trong hầu hết các hệ thống ESP.
+
+- **Event Broker**: Đây là thành phần quan trọng nhất, được thiết kế để nhận và tiêu thụ sự kiện. Đây là thành phần cốt lõi của ESP, và chúng tôi sẽ giải thích chi tiết hơn trong slide tiếp theo.
+- **Event Storage**: Đây là thành phần dùng để lưu trữ các sự kiện được nhận từ các nguồn sự kiện. Theo đó, các đích sự kiện không cần phải đồng bộ với các nguồn sự kiện, và các sự kiện được lưu trữ có thể được truy xuất bất cứ lúc nào.
+- **Analytic và Query Engine**: Đây là thành phần dùng để truy vấn và phân tích các sự kiện được lưu trữ.
+
+**EVENT BROKER TRONG ESP**
+
+Hãy cùng xem xét Event Broker, thành phần cốt lõi của ESP. Nó thường bao gồm ba tiểu thành phần: Ingester, Processor, và Consumption.
+
+- **Ingester**: Được thiết kế để nhận các sự kiện từ nhiều nguồn sự kiện khác nhau một cách hiệu quả.
+- **Processor**: Thực hiện các hoạt động trên dữ liệu như tuần tự hóa và giải tuần tự hóa, nén và giải nén, mã hóa và giải mã, v.v.
+- **Consumption**: Truy xuất các sự kiện từ kho lưu trữ sự kiện và phân phối chúng một cách hiệu quả đến các đích sự kiện đã đăng ký.
+
+**CÁC GIẢI PHÁP ESP PHỐ BIẾN**
+
+Có rất nhiều giải pháp ESP bao gồm `Apache Kafka`, `Amazon Kinesis`, `Apache Flink`, `IBM Event Stream`, `Azure Event Hub`, và nhiều giải pháp khác. Mỗi giải pháp có các tính năng và kịch bản ứng dụng độc đáo riêng. Trong số các ESP này, Apache Kafka có lẽ là phổ biến nhất.
+
+# 5.2. What is Apache Kafka?
+
+Apache Kafka là một nền tảng xử lý luồng sự kiện phân tán, mã nguồn mở, được thiết kế để xử lý các luồng dữ liệu thời gian thực với khả năng mở rộng cao. Kafka được sử dụng để truyền tải, lưu trữ, và xử lý dữ liệu sự kiện trong một hệ thống phân tán. Nó được xây dựng với mục tiêu đảm bảo tính đáng tin cậy, khả năng mở rộng, và khả năng xử lý lượng dữ liệu lớn với tốc độ cao.
+
+## 5.2.1. Architecture of Apache Kafka
+
+Apache Kafka tuân theo kiến trúc máy khách-máy chủ (client-server architecture) và vận hành dưới dạng một cụm (cluster) bao gồm nhiều máy chủ môi giới (broker servers). Các thành phần chính trong kiến trúc của Kafka bao gồm:
+
+- **Event Broker**: Các máy chủ môi giới chịu trách nhiệm nhận sự kiện từ các nhà sản xuất (producers), lưu trữ luồng sự kiện, và phân phối chúng tới các đích tiêu thụ (consumers). Trong kiến trúc này, Kafka có thể mở rộng và xử lý các luồng sự kiện song song.
+
+- **Kafka Connect**: Được sử dụng để nhập (import) và xuất (export) dữ liệu dưới dạng luồng sự kiện từ/đến các nguồn dữ liệu khác nhau, bao gồm cả cơ sở dữ liệu, hệ thống tệp tin, và dịch vụ web.
+
+- **Zookeeper và Kafka Raft (KRaft)**: Trước phiên bản 2.8, Kafka dựa vào Zookeeper, một hệ thống phân tán khác, để quản lý và đảm bảo tất cả các máy chủ môi giới hoạt động đồng bộ và hiệu quả. Tuy nhiên, KRaft đã được giới thiệu để loại bỏ sự phụ thuộc này và tích hợp việc quản lý metadata ngay trong Kafka, giúp đơn giản hóa kiến trúc và tăng cường hiệu quả.
+
+- **Topic và Partitions**: Dữ liệu trong Kafka được tổ chức dưới dạng topics - là các kênh dữ liệu được phân chia thành nhiều partitions. Mỗi partition là một chuỗi log, nơi các bản ghi sự kiện (records) được lưu trữ theo thứ tự thời gian. Partition cho phép Kafka xử lý dữ liệu song song và cung cấp khả năng mở rộng cao.
+
+## 5.2.2. Apache Kafka Features
+
+- **Khả năng phân tán (Distributed System)**: Kafka được thiết kế để hoạt động trong một môi trường phân tán, nơi nhiều máy chủ môi giới có thể xử lý các luồng sự kiện song song, cho phép nó mở rộng dễ dàng khi cần xử lý lượng dữ liệu lớn.
+
+- **Tốc độ cao (High Throughput)**: Kafka có khả năng xử lý hàng triệu sự kiện mỗi giây nhờ vào kiến trúc phân tán của nó. Điều này làm cho Kafka trở thành lựa chọn lý tưởng cho các ứng dụng yêu cầu xử lý dữ liệu thời gian thực.
+
+- **Độ tin cậy cao (High Reliability)**: Kafka cung cấp tính năng sao lưu dữ liệu (replication) trên các partitions, đảm bảo rằng dữ liệu sẽ không bị mất mát ngay cả khi một hoặc nhiều máy chủ môi giới gặp sự cố.
+
+- **Lưu trữ vĩnh viễn (Persistent Storage)**: Dữ liệu sự kiện trong Kafka được lưu trữ vĩnh viễn, cho phép các ứng dụng tiêu thụ dữ liệu theo nhu cầu mà không cần lo lắng về thời gian thực.
+
+- **Mở mã nguồn (Open Source)**: Kafka là một dự án mã nguồn mở, cho phép người dùng sử dụng miễn phí và tùy chỉnh hệ thống theo nhu cầu của mình.
+
+## 5.2.3. Apache Kafka Applications
+
+Kafka được sử dụng rộng rãi trong nhiều kịch bản ứng dụng khác nhau, bao gồm:
+
+- **Theo dõi hoạt động người dùng**: Ghi nhận các hoạt động như nhấp chuột, thao tác bàn phím, và lượt xem trang trên các trang web hoặc ứng dụng để phân tích hành vi người dùng.
+
+- **Xử lý luồng số liệu (Metric Streaming)**: Thu thập dữ liệu từ các cảm biến IoT, thiết bị GPS, và các hệ thống giám sát phần cứng/phần mềm để phân tích và ra quyết định theo thời gian thực.
+
+- **Tích hợp log (Log Integration)**: Thu thập và tích hợp các log từ các hệ thống khác nhau vào một kho dữ liệu tập trung để giám sát và phân tích.
+
+- **Xử lý giao dịch tài chính**: Quản lý và xử lý các giao dịch tài chính trong thời gian thực, đảm bảo tính toàn vẹn và tuân thủ quy định.
+
+# 5.3. Hands-on
+
+- Tải về Kafka bằng dòng lệnh 
+
+```
+wget https://downloads.apache.org/kafka/3.8.0/kafka_2.13-3.8.0.tgz
+```
+
+Extract nó
+
+```
+tar -xzf kafka_2.13-3.8.0.tgz
+```
+
+- Cấu hình KRaft và khởi chạy server
+
+```
+cd kafka_2.13-3.8.0
+```
+
+Tạo một cluster UUID mà xác định duy nhất Kafka Cluster
+
+```
+KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+```
+
+Cluster ID này sẽ được sử dụng bởi KRaft Controller
+
+KRaft yêu cầu một thư mục chứa các file log, nên cần định nghĩa địa chỉ thư mục log
+
+```
+bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c config/kraft/server.properties
+```
+
+Bây giờ KRaft đã được cấu hình. Có thể khởi chạy server bằng câu lệnh sau
+
+```
+bin/kafka-server-start.sh config/kraft/server.properties
+```
+
+- Cách tạo một topic trong kafka
+
+```
+bin/kafka-topics.sh --create --topic <topic_name> --bootstrap-server localhost:<port_number>
+```
+
+Có thể thêm phân vùng chi tiết đằng sau `<topic_name>` trong câu lệnh như sau `--partitions <number>`
+
+- Tạo một procedure
+
+```
+bin/kafka-console-producer.sh   --bootstrap-server localhost:<port_number>   --topic <topic_name>
+```
+
+Sau đó CLI sẽ hiện ra dấu `>`, trong đó bạn có thể gửi message
+
+- Tạo một consumer
+
+```
+bin/kafka-console-consumer.sh   --bootstrap-server localhost:<port_number>   --topic <topic_name>   --from-beginning
+```
+
+Khi vào đúng port và topic name thì các message bạn gửi từ procedure sẽ hiện lên.
+
+
+
 
