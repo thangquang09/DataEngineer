@@ -57,6 +57,20 @@
   - [8.2. Examples](#82-examples)
     - [8.2.1. Example 1](#821-example-1)
     - [8.2.2. Example 2](#822-example-2)
+- [9. Facts and Dimensional Modeling](#9-facts-and-dimensional-modeling)
+  - [9.1. Facts](#91-facts)
+  - [9.2. Fact Table](#92-fact-table)
+  - [9.3. Dimensions](#93-dimensions)
+  - [9.4. Dimension Table](#94-dimension-table)
+  - [9.5 Example of Data Modeling](#95-example-of-data-modeling)
+  - [9.6. **SUMMARY**](#96-summary)
+  - [9.7 Hands-on Lab](#97-hands-on-lab)
+    - [9.7.1. Exercise 1: Study the schema of the given csv file](#971-exercise-1-study-the-schema-of-the-given-csv-file)
+    - [9.7.2. Exercise 2: Design the fact tables](#972-exercise-2-design-the-fact-tables)
+    - [9.7.3. Exercise 3: Design the dimension tables](#973-exercise-3-design-the-dimension-tables)
+    - [9.7.4. Exercise 4: Create a star schema using the fact and dimension tables](#974-exercise-4-create-a-star-schema-using-the-fact-and-dimension-tables)
+    - [9.7.5. Exercise 5: Create the schema on the data warehouse](#975-exercise-5-create-the-schema-on-the-data-warehouse)
+    - [9.7.6. Practice Exercises](#976-practice-exercises)
 
 
 # 1. Data Warehouses
@@ -599,5 +613,234 @@ GROUPING SETS(autoclassname, salespersonname)
 
 Về cơ bản, việc áp dụng `GROUPING SETS` cho hai thứ nguyên, `salespersonname` và `autoclassname` sẽ mang lại cùng một kết quả mà bạn sẽ nhận được bằng cách thêm hai kết quả riêng lẻ của việc áp dụng `GROUP BY` cho từng thứ nguyên riêng biệt như trong Ví dụ 1. 
 
+# 9. Facts and Dimensional Modeling
 
+## 9.1. Facts
+
+Trong kho dữ liệu, dữ liệu thường được phân thành hai loại chính: Facts và Dimensions.
+
+`Facts` là các giá trị có thể đo lường được, ví dụ như nhiệt độ, số lượng bán hàng, hoặc lượng mưa tính bằng milimét. Những giá trị này thường là định lượng nhưng cũng có thể là định tính, ví dụ như điều kiện thời tiết ("có mây rải rác").
+
+**Ví dụ:**
+
+- Nhiệt độ: "24°C".
+- Doanh thu bán hàng: "1000 đô la".
+- Lượng mưa: "5 mm".
+
+## 9.2. Fact Table
+
+`Fact Table` (Bảng Fact) là bảng lưu trữ các facts của một quy trình kinh doanh và chứa các khóa ngoại để liên kết với các bảng dimension. Bảng fact thường bao gồm các số liệu có thể cộng dồn được, như số tiền bán hàng.
+
+- Fact Table có thể chứa các facts chi tiết, như giao dịch bán hàng từng đơn lẻ, hoặc facts đã được tổng hợp, như tổng doanh thu hàng ngày hoặc hàng tuần.
+
+Ví dụ:
+
+- Bảng Fact cho bán hàng có thể bao gồm các trường như:
+    - **Sale Date**: Ngày bán hàng.
+    - **Sale Amount**: Số tiền bán hàng.
+    - **Sale ID**: Khóa chính.
+
+`Bảng Fact cũng có thể chứa các khóa ngoại để liên kết với các bảng dimension.`
+
+## 9.3. Dimensions
+
+Dimensions (Chiều) là `các thuộc tính phân loại các facts`. Chúng cung cấp ngữ cảnh cho các facts, làm cho các facts trở nên có ý nghĩa hơn.
+
+- Dimensions có thể là các biến phân loại như tên người, sản phẩm, địa điểm, hoặc thời gian.
+
+**Ví dụ:**
+
+- Dimension Table cho sản phẩm có thể bao gồm các trường:
+    - Product ID: Khóa chính.
+    - Product Name: Tên sản phẩm.
+    - Product Category: Danh mục sản phẩm.
+  
+## 9.4. Dimension Table
+
+Dimension Table (Bảng Dimension) `lưu trữ các dimension của một fact và được liên kết với bảng fact qua khóa ngoại.`
+
+Ví dụ về Dimension Tables:
+
+- **Product Table**: Mô tả các sản phẩm, bao gồm thông tin như tên sản phẩm, loại sản phẩm, màu sắc, và kích thước.
+- **Employee Table**: Mô tả các nhân viên, bao gồm tên, chức danh, và phòng ban.
+- **Temporal Table**: Mô tả thời gian với độ phân giải chi tiết, như ngày, tháng, năm.
+- **Geography Table**: Mô tả địa điểm như quốc gia, bang, thành phố, và mã bưu điện.
+
+![Example Dimension Table](example_dimensiontable.png)
+
+## 9.5 Example of Data Modeling
+
+Để làm rõ mối quan hệ giữa bảng fact và các bảng dimension, hãy xem xét ví dụ sau:
+
+**Bài toán: Bán hàng tại đại lý ô tô**
+
+![Example Schema Relation of Fact table and Dimension table](example_relation_fact_dimension_table.png)
+
+- Fact Table: Bảng lưu trữ thông tin về các giao dịch bán hàng.
+    - Sale Date: Ngày bán hàng.
+    - Sale Amount: Số tiền bán hàng.
+    - Sale ID: Khóa chính.
+
+- Dimension Tables:
+
+    - Vehicle Table: Mô tả các xe bán, bao gồm:
+        - Vehicle ID: Khóa chính.
+        - Make: Hãng xe.
+        - Model: Mẫu xe.
+
+    - Salesperson Table: Mô tả các nhân viên bán hàng, bao gồm:
+        - Salesperson ID: Khóa chính.
+        - First Name: Tên.
+        - Last Name: Họ.
+
+- Mối liên kết: Bảng Fact liên kết với các bảng Dimension thông qua khóa ngoại:
+    - Vehicle ID trong bảng Fact liên kết với Vehicle ID trong bảng Vehicle.
+    - Salesperson ID trong bảng Fact liên kết với Salesperson ID trong bảng Salesperson.
+
+## 9.6. **SUMMARY**
+
+- `Facts và Dimensions` là hai loại dữ liệu chính trong kho dữ liệu.
+- `Facts` thường là các số liệu đo lường quy trình kinh doanh, như số tiền bán hàng.
+- `Dimensions` phân loại và cung cấp ngữ cảnh cho các facts, ví dụ như người bán, ngày bán, và cửa hàng.
+- `Fact Table` chứa các facts và khóa ngoại liên kết với các bảng dimension.
+- `Dimension Table` lưu trữ các thuộc tính phân loại và giúp làm rõ các facts.
+
+## 9.7 Hands-on Lab
+
+Lab được thiết kế để hướng dẫn bạn trong quá trình thiết kế kho dữ liệu cho nhà cung cấp dịch vụ đám mây. Nó tập trung vào việc sử dụng dữ liệu thanh toán được cung cấp trong tệp CSV để tạo lược đồ sao, bao gồm cả việc thiết kế các `Fact Tables` và `Dimensions`. Lược đồ này sẽ hỗ trợ các truy vấn phức tạp liên quan đến thanh toán, chẳng hạn như thanh toán trung bình cho mỗi khách hàng, thanh toán theo quốc gia, ngành và danh mục cũng như xu hướng theo thời gian.
+
+### 9.7.1. Exercise 1: Study the schema of the given csv file
+
+Trong lab này, ta sẽ thiết kế data warehouse cho một nhà cung cấp dịch vụ đám mây
+
+Nhà cung cấp dịch vụ đám mây đã cung cấp cho chúng tôi dữ liệu thanh toán của họ trong tệp csv `cloud-billing-dataset.csv`. Tệp này chứa dữ liệu thanh toán trong thập kỷ qua.
+
+File csv có các cột sau:
+
+| Field Name | Details |
+| ------------ | --------- |
+| customerid | Id của khách hàng |
+| category | Hạng mục khách hàng. Ví dụ: Cá nhân hoặc Công ty |
+| country | Quốc gia của khách hàng |
+| industry | Khách hàng thuộc lĩnh vực/ngành nào. Ví dụ: Pháp lý, Kỹ thuật |
+| month | Tháng thanh toán, được lưu trữ dưới dạng YYYY-MM. Ví dụ: 2009-01 là tháng 1 năm 2009 |
+| billedamount | Số tiền được tính bởi các dịch vụ đám mây được cung cấp trong tháng đó bằng USD |
+
+Chúng ta cần thiết kế một kho dữ liệu có thể hỗ trợ các truy vấn được liệt kê bên dưới:
+
+
+- average billing per customer: hóa đơn trung bình cho mỗi khách hàng
+- billing by country: thanh toán theo quốc gia
+- top 10 customers: 10 khách hàng hàng đầu
+- top 10 countries: 10 quốc gia hàng đầu
+- billing by industry: thanh toán theo ngành
+- billing by category: thanh toán theo danh mục
+- billing by year: thanh toán theo năm
+- billing by month: thanh toán theo tháng
+- billing by quarter: thanh toán theo quý
+- average billing per industry per month: thanh toán trung bình mỗi ngành mỗi tháng
+- average billing per industry per quarter: thanh toán trung bình cho mỗi ngành mỗi quý
+- average billing per country per quarter: thanh toán trung bình cho mỗi quốc gia mỗi quý
+- average billing per country per industry per quarter: thanh toán trung bình cho mỗi quốc gia cho mỗi ngành mỗi quý
+
+Dưới đây là năm hàng được chọn ngẫu nhiên từ tệp csv.
+
+![The head of csv file](head_csv_file.png)
+
+### 9.7.2. Exercise 2: Design the fact tables
+
+Fact trong dữ liệu này là hóa đơn được tạo hàng tháng. Các trường `customerid` và `billedamount` là những trường quan trọng trong bảng dữ kiện.
+
+Chúng tôi cũng cần một cách để xác định thông tin khách hàng bổ sung, ngoài thông tin id và ngày. Vì vậy, chúng ta cần các trường tham chiếu đến thông tin khách hàng và ngày tháng trong các bảng khác.
+
+Bảng fact cuối cùng cho bill sẽ trông như thế này:
+
+| Field Name | Details |
+| ------------ | --------- |
+|billid|Khóa chính - Mã định danh duy nhất cho mỗi hóa đơn|
+|customerid|Khóa ngoại - Id của khách hàng|
+|monthid|Khóa ngoại - Id của tháng. Chúng tôi có thể giải quyết thông tin tháng thanh toán bằng cách này|
+|billedamount|Số tiền được tính bởi các dịch vụ đám mây được cung cấp trong tháng đó bằng USD|
+
+### 9.7.3. Exercise 3: Design the dimension tables
+
+Chúng ta có 2 dimensions cho fact (ở đây là bill hàng tháng)
+
+1. Customer information
+2. Date information
+
+Chúng ta hãy sắp xếp tất cả các trường cung cấp thông tin về khách hàng vào một dimension table.
+
+| Field Name | Details |
+| ------------ | --------- |
+|customerid|Khóa chính - Id của khách hàng|
+|category|Hạng mục khách hàng. Ví dụ: Cá nhân hoặc Công ty|
+|country|Quốc gia của khách hàng|
+|industry|Khách hàng thuộc lĩnh vực/ngành nào. Ví dụ: Pháp lý, Kỹ thuật|
+
+Hãy để chúng tôi sắp xếp hoặc lấy ra tất cả các trường cung cấp thông tin về ngày của hóa đơn.
+
+| Field Name | Details |
+| ------------ | --------- |
+|monthid|Khóa chính - Id của tháng|
+|year|Năm bắt nguồn từ trường tháng của dữ liệu gốc. Ví dụ: 2010|
+|month|Số tháng được lấy từ trường tháng của dữ liệu gốc. Ví dụ: 1, 2, 3|
+|monthname|Tên tháng được lấy từ trường tháng của dữ liệu gốc. Ví dụ: March|
+|quarter|Số quý được lấy từ trường tháng của dữ liệu gốc. Ví dụ: 1, 2, 3, 4|
+|quartername|Tên quý bắt nguồn từ trường tháng của dữ liệu gốc. Ví dụ: Q1, Q2, Q3, Q4|
+
+### 9.7.4. Exercise 4: Create a star schema using the fact and dimension tables
+
+Dựa vào 2 bài tập trước hiện tại chúng ta đã có 3 bảng, chúng ta có thể đặt tên như bảng bên dưới.
+
+| Table Name | Type | Details |
+| ------------ | --------- | --------- |
+|FactBilling|Fact|Bảng này chứa số tiền thanh toán và khóa ngoại cho dữ liệu khách hàng và tháng|
+|DimCustomer|Dimension|Bảng này chứa tất cả các thông tin liên quan đến khách hàng|
+|DimMonth|Dimension|Bảng này chứa tất cả các thông tin liên quan đến tháng thanh toán|
+
+Khi chúng ta sắp xếp các bảng trên theo kiểu Star Schema, chúng ta sẽ có được cấu trúc bảng trông giống như trong hình bên dưới.
+
+![Star Schema Created by Fact Tables and Dimension Tables](star_schema.png)
+
+### 9.7.5. Exercise 5: Create the schema on the data warehouse
+
+[SQL Script Using PostgreSQL](star-schema.sql)
+
+### 9.7.6. Practice Exercises
+
+Trong bài tập thực hành này, bạn sẽ phân tích tệp csv bên dưới, chứa dữ liệu về doanh số bán hàng hàng ngày tại các cửa hàng khác nhau của một nhà bán lẻ thời trang quốc tế.
+
+![Fashion retailer CSV](fashion_retailer_csv.png)
+
+1. Thiết kế lược đồ cho dimension table DimStore.
+
+| Field Name | Details |
+| ------------ | --------- |
+|storeid|Id của cửa hàng, khóa chính|
+|country|Quốc gia của cửa hàng|
+|city|Thành phố của cửa hàng|
+
+2. Thiết kế lược đồ cho dimension table DimDate.
+
+| Field Name | Details |
+| ------------ | --------- |
+|dateid|Id của ngày, khóa chính|
+|dayofweek|Ngày trong tuần|
+|day|Ngày của date|
+|month|Tháng của date|
+|year|Năm của date|
+|weekdayname|Tên của ngày trong tuần|
+|monthname|Tên của tháng|
+|quater|Quý mà date nằm trong|
+|quatername|Tên của quý mà date nằm trong|
+
+3. Thiết kế lược đồ cho bảng FactSales.
+
+| Field Name | Details |
+| ------------ | --------- |
+|saleid|Id của sale, khóa chính|
+|storeid|Id của store, khóa ngoại liên kết với DimStore|
+|dateid|Id của date, khóa ngoại liên kết với DimDate|
+|totalsales|Tổng doanh thu|
 
