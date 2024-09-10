@@ -63,7 +63,7 @@
   - [9.3. Dimensions](#93-dimensions)
   - [9.4. Dimension Table](#94-dimension-table)
   - [9.5 Example of Data Modeling](#95-example-of-data-modeling)
-  - [9.6. **SUMMARY**](#96-summary)
+  - [9.6. Summary](#96-summary)
   - [9.7 Hands-on Lab](#97-hands-on-lab)
     - [9.7.1. Exercise 1: Study the schema of the given csv file](#971-exercise-1-study-the-schema-of-the-given-csv-file)
     - [9.7.2. Exercise 2: Design the fact tables](#972-exercise-2-design-the-fact-tables)
@@ -449,7 +449,7 @@ Chúng ta sẽ bắt đầu bằng cách minh họa khái niệm về data cube 
 
 ## 7.1. What is Data Cube?
 
-Một data cube là c`ấu trúc dữ liệu được hình thành từ các dimension` (chiều) trong star schema. Mỗi dimension đại diện cho một khía cạnh của dữ liệu, ví dụ như sản phẩm, vị trí địa lý, hoặc năm bán hàng. Các ô trong cube chứa giá trị của một fact quan trọng, ví dụ như doanh thu.
+Một data cube là `cấu trúc dữ liệu được hình thành từ các dimension` (chiều) trong star schema. Mỗi dimension đại diện cho một khía cạnh của dữ liệu, ví dụ như sản phẩm, vị trí địa lý, hoặc năm bán hàng. Các ô trong cube chứa giá trị của một fact quan trọng, ví dụ như doanh thu.
 
 Hãy xem xét ví dụ về một hệ thống OLAP (Online Analytical Processing) cho dữ liệu bán hàng. Giả sử ta có ba chiều:
 
@@ -697,7 +697,7 @@ Ví dụ về Dimension Tables:
     - Vehicle ID trong bảng Fact liên kết với Vehicle ID trong bảng Vehicle.
     - Salesperson ID trong bảng Fact liên kết với Salesperson ID trong bảng Salesperson.
 
-## 9.6. **SUMMARY**
+## 9.6. Summary
 
 - `Facts và Dimensions` là hai loại dữ liệu chính trong kho dữ liệu.
 - `Facts` thường là các số liệu đo lường quy trình kinh doanh, như số tiền bán hàng.
