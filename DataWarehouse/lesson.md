@@ -91,7 +91,13 @@
   - [12.4. Benefit of Staging Area](#124-benefit-of-staging-area)
   - [12.5. Summary](#125-summary)
   - [12.6. Hands-on Lab: Setting up a staging area](#126-hands-on-lab-setting-up-a-staging-area)
-    - [12.6.1. Exercise 1: Create Database](#1261-exercise-1-create-database)
+- [13. Verify Data Quality](#13-verify-data-quality)
+  - [13.1. What is Data Quality Verification?](#131-what-is-data-quality-verification)
+  - [13.2. Why we need to verify data quality?](#132-why-we-need-to-verify-data-quality)
+  - [13.3. Error Data Processing](#133-error-data-processing)
+  - [13.4. Tools](#134-tools)
+  - [13.5. Summary](#135-summary)
+  - [13.6. Hands-on Lab: Verifying Data Quality for a Data Warehouse](#136-hands-on-lab-verifying-data-quality-for-a-data-warehouse)
 
 
 # 1. Data Warehouses
@@ -1085,8 +1091,90 @@ Thông qua ví dụ và các chức năng của khu vực dự trữ, chúng ta 
 
 Mục đích của Lab là trang bị cho bạn những kỹ năng thực tế trong việc thiết lập và quản lý máy chủ chạy thử cho kho dữ liệu, đặc biệt là sử dụng PostgreSQL. Lab tập trung vào việc dạy cách thiết kế và triển khai lược đồ cơ sở dữ liệu, tải dữ liệu vào bảng và chạy các truy vấn mẫu để tương tác với dữ liệu. Điều này nhằm mục đích cung cấp cho bạn sự hiểu biết thực tế về những vấn đề phức tạp liên quan đến việc chuẩn bị và quản lý môi trường kho dữ liệu.
 
-### 12.6.1. Exercise 1: Create Database
-
 [Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvU2V0dGluZyUyMHVwJTIwYSUyMHN0YWdpbmclMjBhcmVhL1NldHRpbmclMjB1cCUyMGElMjBzdGFnaW5nJTIwYXJlYS5tZCIsInRvb2xfdHlwZSI6InRoZWlhZG9ja2VyIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3MjUwMjE4MDB9.3WOPjR78QhS--cUWgfncSrOm52nwWvu4t01IbN3veJw)
 
+# 13. Verify Data Quality
+
+## 13.1. What is Data Quality Verification?
+
+Xác minh chất lượng dữ liệu là quá trình kiểm tra dữ liệu của bạn dựa trên các tiêu chí sau:
+
+- **Độ chính xác (Accuracy)**: Dữ liệu của bạn có chính xác không?
+- **Tính đầy đủ (Completeness)**: Có dữ liệu bị thiếu không?
+- **Tính nhất quán (Consistency)**: Các trường dữ liệu có được nhập liệu nhất quán không?
+- **Tính kịp thời (Currency)**: Dữ liệu của bạn có cập nhật kịp thời không?
+
+Xác minh chất lượng dữ liệu là quản lý chất lượng dữ liệu để nâng cao độ tin cậy của dữ liệu. Dữ liệu chất lượng cao giúp việc tích hợp dữ liệu phức tạp và các mối quan hệ liên quan thành công hơn. Điều này cung cấp cho bạn cái nhìn tổng thể về tổ chức, dữ liệu sẵn sàng cho các phân tích nâng cao, mô hình thống kê và học máy. Cuối cùng, bạn sẽ có nhiều sự tự tin hơn khi ra quyết định.
+
+**Ví dụ:**
+
+Nếu bạn có một tập dữ liệu khách hàng nhưng một số bản ghi thiếu địa chỉ email, thì điều này sẽ gây khó khăn cho việc gửi thông tin khuyến mãi hoặc khảo sát. Xác minh chất lượng dữ liệu giúp bạn phát hiện và khắc phục các lỗi thiếu sót này.
+
+## 13.2. Why we need to verify data quality?
+
+Trong khi điều hành doanh nghiệp, chất lượng dữ liệu thường không được quan tâm đúng mức. Theo báo cáo của Harvard Business Review, ước tính từ IBM năm 2016 cho thấy tổn thất do chất lượng dữ liệu kém ở Mỹ đã lên đến hơn 3 nghìn tỷ đô la mỗi năm. Các tổ chức phải đối mặt với nhiều vấn đề về chất lượng dữ liệu, bao gồm:
+
+- **Độ chính xác**: Đảm bảo dữ liệu từ hệ thống nguồn và hệ thống đích là chính xác và đồng bộ.
+    - **Vấn đề thường gặp**: Lỗi chính tả, giá trị vượt ngưỡng, giá trị ngoại lệ, hoặc các lỗi căn chỉnh dữ liệu, chẳng hạn như dấu phẩy không đúng vị trí trong tệp CSV.
+
+- **Tính đầy đủ**: Dữ liệu có thể bị thiếu khi các trường bắt buộc không được điền hoặc hệ thống sử dụng các giá trị thay thế như “999” hoặc “-1” để chỉ ra thiếu sót.
+
+- **Tính nhất quán**: Dữ liệu có được nhập đúng định dạng và quy chuẩn không? Ví dụ, nếu một hệ thống sử dụng định dạng ngày “năm-tháng-ngày” và một hệ thống khác sử dụng “tháng-ngày-năm,” dữ liệu sẽ không nhất quán.
+
+- **Tính kịp thời**: Dữ liệu có được cập nhật mới nhất không? Ví dụ, thông tin địa chỉ khách hàng có thể bị lỗi thời, gây khó khăn trong việc liên lạc.
+
+Ví dụ trực quan:
+
+Trong một cơ sở dữ liệu khách hàng, một số khách hàng có tên là "Mr. John Doe," trong khi những người khác chỉ có "John Doe." Điều này có thể gây nhầm lẫn vì hệ thống sẽ xem hai bản ghi này là hai cá nhân khác nhau.
+
+## 13.3. Error Data Processing
+
+Việc xử lý và ngăn ngừa dữ liệu lỗi là một quy trình phức tạp và lặp đi lặp lại. Dưới đây là quy trình điển hình:
+
+- **Thiết lập quy tắc để phát hiện dữ liệu lỗi.** Ví dụ, bạn có thể viết các truy vấn SQL để kiểm tra các giá trị thiếu hoặc giá trị vượt ngưỡng.
+
+- **Cô lập dữ liệu lỗi sau khi phát hiện.** Ví dụ, bạn có thể lưu trữ dữ liệu lỗi trong một khu vực cách ly để không ảnh hưởng đến các quy trình khác.
+
+- **Báo cáo dữ liệu lỗi và chia sẻ với chuyên gia** để phân tích nguyên nhân gốc rễ của vấn đề, từ đó điều chỉnh quy trình để ngăn ngừa lỗi xảy ra trong tương lai.
+
+- **Tự động hóa quy trình**: Tạo các script để tự động kiểm tra và sửa lỗi dữ liệu trong các lần tải dữ liệu hàng đêm.
+
+Ví dụ:
+
+Một doanh nghiệp phát hiện ra rằng dữ liệu từ một số nguồn luôn gặp phải các vấn đề như thiếu dữ liệu, trùng lặp, và giá trị không hợp lệ. Họ viết các truy vấn SQL để kiểm tra và loại bỏ các bản ghi lỗi này. Sau đó, họ tạo một script tự động chạy các truy vấn đó vào ban đêm và báo cáo những vấn đề chưa được giải quyết.
+
+## 13.4. Tools
+
+Có nhiều công cụ hỗ trợ các tổ chức xác minh và quản lý chất lượng dữ liệu, chẳng hạn như:
+
+- IBM InfoSphere Information Server for Data Quality
+- Informatica Data Quality
+- SAP Data Quality Management
+- SAS Data Quality
+- Talend Open Studio for Data Quality
+- Microsoft Data Quality Services
+- Oracle Enterprise Data Quality
+- OpenRefine (một công cụ mã nguồn mở)
+
+Ví dụ: IBM InfoSphere Information Server for Data Quality
+
+Sản phẩm này giúp bạn liên tục giám sát chất lượng dữ liệu và duy trì dữ liệu luôn sạch. Nó cung cấp các công cụ để:
+
+- Hiểu dữ liệu và các mối quan hệ của nó.
+- Giám sát và phân tích chất lượng dữ liệu một cách liên tục.
+- Làm sạch, chuẩn hóa và khớp dữ liệu.
+- Bảo trì lịch sử dữ liệu, bao gồm nguồn gốc và những gì đã xảy ra với dữ liệu trong quá trình sử dụng.
+
+## 13.5. Summary
+
+- Xác minh chất lượng dữ liệu dựa trên các yếu tố: độ chính xác, tính đầy đủ, tính nhất quán, và tính kịp thời.
+- Xác minh dữ liệu giúp quản lý chất lượng, tăng độ tin cậy và giá trị của dữ liệu.
+- Xử lý dữ liệu lỗi là một quy trình phức tạp và lặp đi lặp lại, nhưng có thể tự động hóa để giảm thiểu công việc thủ công.
+- Các công cụ như IBM InfoSphere Information Server for Data Quality giúp quản lý dữ liệu trong một môi trường thống nhất và toàn diện.
+
+Việc duy trì chất lượng dữ liệu không chỉ giúp giảm thiểu rủi ro, mà còn nâng cao độ chính xác của các phân tích và quyết định kinh doanh trong doanh nghiệp.
+
+## 13.6. Hands-on Lab: Verifying Data Quality for a Data Warehouse
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvVmVyaWZ5aW5nJTIwRGF0YSUyMFF1YWxpdHklMjBmb3IlMjBhJTIwRGF0YSUyMFdhcmVob3VzZS9WZXJpZnlpbmclMjBEYXRhJTIwUXVhbGl0eSUyMGZvciUyMGElMjBEYXRhJTIwV2FyZWhvdXNlLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNjAzNzIwNn0.fDGoN3u4As3IzmuG2AfKHQVAix1QjCpOdl2oN4uOxxU)
 
