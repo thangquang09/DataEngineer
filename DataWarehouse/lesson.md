@@ -84,6 +84,14 @@
   - [11.4. Comparing benefits: snowflake vs. star data warehouses](#114-comparing-benefits-snowflake-vs-star-data-warehouses)
   - [11.5. Practical differences](#115-practical-differences)
   - [11.6. Too much of a good thing?](#116-too-much-of-a-good-thing)
+- [12. Staging Areas for Data Warehouses](#12-staging-areas-for-data-warehouses)
+  - [12.1. What is Staging Areas in Data Warehouse?](#121-what-is-staging-areas-in-data-warehouse)
+  - [12.2. Data Warehouse Architecture with Staging Area](#122-data-warehouse-architecture-with-staging-area)
+  - [12.3. Main functions of Staging Area](#123-main-functions-of-staging-area)
+  - [12.4. Benefit of Staging Area](#124-benefit-of-staging-area)
+  - [12.5. Summary](#125-summary)
+  - [12.6. Hands-on Lab: Setting up a staging area](#126-hands-on-lab-setting-up-a-staging-area)
+    - [12.6.1. Exercise 1: Create Database](#1261-exercise-1-create-database)
 
 
 # 1. Data Warehouses
@@ -1020,3 +1028,65 @@ Bạn cũng nhận thấy rằng trong số các thứ nguyên có các cột c�
 Ở giai đoạn này, bạn đã biết rằng bạn có thể áp dụng tốt star or snowflake schema cho tập dữ liệu, từ đó chuẩn hóa ở mức độ bạn muốn. Cho dù bạn chọn star hay snowflake, tổng kích thước dữ liệu của bảng dữ kiện trung tâm sẽ giảm đáng kể. Điều này là do `thay vì sử dụng các thứ nguyên trực tiếp trong bảng dữ kiện chính, bạn sử dụng các khóa thay thế`, thường là các số nguyên; và bạn di chuyển các thứ nguyên tự nhiên sang các bảng riêng của chúng hoặc hệ thống phân cấp của các bảng được tham chiếu bởi các khóa thay thế. Ngay cả số nguyên 32 bit cũng nhỏ so với chuỗi 10 ký tự (8 X 10 = 80 bit).
  
 Bây giờ, vấn đề là thu thập các yêu cầu và tìm ra sơ đồ chuẩn hóa tối ưu nào đó cho lược đồ của bạn.
+
+# 12. Staging Areas for Data Warehouses
+
+## 12.1. What is Staging Areas in Data Warehouse?
+
+Khu vực dự trữ là một kho lưu trữ trung gian được sử dụng cho quá trình ETL (Extract, Transform, Load - Trích xuất, Chuyển đổi, Tải dữ liệu). Nói một cách đơn giản, đây là cầu nối giữa các nguồn dữ liệu và hệ thống đích như kho dữ liệu (Data Warehouse), data mart hoặc các hệ thống lưu trữ dữ liệu khác.
+
+Các khu vực này thường là tạm thời, tức là dữ liệu sẽ bị xóa sau khi quy trình ETL hoàn tất. Tuy nhiên, trong một số kiến trúc, dữ liệu có thể được giữ lại để phục vụ cho việc lưu trữ hoặc xử lý sự cố. Ngoài ra, khu vực dự trữ còn hữu ích cho việc giám sát và tối ưu hóa các quy trình ETL.
+
+Ví dụ:
+
+- Flat files (các tệp dạng phẳng) như tệp CSV được lưu trữ trong một thư mục và được quản lý bằng các công cụ như Bash hoặc Python.
+- Bảng SQL trong các hệ thống quản lý cơ sở dữ liệu quan hệ như Db2.
+- Một cơ sở dữ liệu riêng biệt trong nền tảng kho dữ liệu như Cognos Analytics.
+
+## 12.2. Data Warehouse Architecture with Staging Area
+
+Hãy tưởng tượng một doanh nghiệp muốn xây dựng một hệ thống phân tích trực tuyến (OLAP) cho Kế toán Chi phí. Dữ liệu cần thiết được quản lý trong các hệ thống xử lý giao dịch trực tuyến (OLTP) riêng biệt, chẳng hạn như từ bộ phận Nhân sự, bộ phận Bán hàng, và bộ phận Mua hàng.
+
+Dữ liệu từ các hệ thống này sẽ được trích xuất vào các bảng dự trữ riêng biệt, được tạo trong Cơ sở dữ liệu Dự trữ. Sau đó, dữ liệu sẽ được chuyển đổi trong khu vực dự trữ bằng các truy vấn SQL để phù hợp với yêu cầu của hệ thống kế toán chi phí. Khi đã được chuyển đổi, dữ liệu sẽ được tích hợp (joined) thành một bảng duy nhất và sau đó tải vào hệ thống kế toán.
+
+![DW with Staging Area](dw_staging_area.png)
+
+## 12.3. Main functions of Staging Area
+
+- **Tích hợp dữ liệu**: Khu vực dự trữ giúp hợp nhất dữ liệu từ nhiều hệ thống nguồn khác nhau.
+- **Phát hiện thay đổi**: Có thể thiết lập để chỉ trích xuất các thay đổi mới hoặc dữ liệu đã thay đổi.
+- **Lập lịch**: Các tác vụ trong quy trình ETL có thể được lập lịch để chạy theo thứ tự cụ thể hoặc song song.
+
+Ngoài ra còn có:
+
+- **Làm sạch và xác thực dữ liệu**: Ví dụ, xử lý các giá trị thiếu hoặc bản ghi trùng lặp.
+- **Tổng hợp dữ liệu**: Dữ liệu bán hàng hàng ngày có thể được tổng hợp thành trung bình hàng tuần, hàng tháng, hoặc hàng năm trước khi tải vào hệ thống báo cáo.
+- **Chuẩn hóa dữ liệu**: Đảm bảo tính nhất quán về kiểu dữ liệu hoặc mã danh mục như mã quốc gia và mã bang.
+
+Ví dụ:
+
+Giả sử bạn có dữ liệu về các giao dịch bán hàng từ nhiều cửa hàng khác nhau. Các cửa hàng này có thể có cách ghi nhận khác nhau về tên bang như "Mont," "MA," hoặc "Montana." Khu vực dự trữ sẽ đảm nhận việc chuẩn hóa tất cả các giá trị này về một định dạng chung.
+
+## 12.4. Benefit of Staging Area
+
+Khu vực dự trữ là một khu vực tách biệt, nơi dữ liệu từ hệ thống nguồn được trích xuất. Bước trích xuất này giúp tách biệt các quá trình như xác thực, làm sạch khỏi hệ thống nguồn, giảm thiểu rủi ro gây hỏng dữ liệu gốc. Nó cũng đơn giản hóa việc xây dựng và bảo trì quy trình ETL.
+
+Nếu dữ liệu bị hỏng, bạn có thể dễ dàng khôi phục từ khu vực dự trữ mà không ảnh hưởng đến hệ thống nguồn.
+
+## 12.5. Summary
+
+- Khu vực dự trữ là cầu nối giữa các nguồn dữ liệu và hệ thống đích, giúp tích hợp các nguồn dữ liệu khác nhau trong kho dữ liệu.
+- Khu vực dự trữ có thể được triển khai đơn giản dưới dạng các tệp phẳng hoặc bảng trong cơ sở dữ liệu.
+- Việc sử dụng khu vực dự trữ giúp giảm thiểu rủi ro hỏng dữ liệu, đồng thời giúp tối ưu hóa quy trình ETL.
+
+Thông qua ví dụ và các chức năng của khu vực dự trữ, chúng ta thấy rõ vai trò quan trọng của nó trong việc đảm bảo quá trình trích xuất, chuyển đổi, và tải dữ liệu diễn ra suôn sẻ và an toàn.
+
+## 12.6. Hands-on Lab: Setting up a staging area
+
+Mục đích của Lab là trang bị cho bạn những kỹ năng thực tế trong việc thiết lập và quản lý máy chủ chạy thử cho kho dữ liệu, đặc biệt là sử dụng PostgreSQL. Lab tập trung vào việc dạy cách thiết kế và triển khai lược đồ cơ sở dữ liệu, tải dữ liệu vào bảng và chạy các truy vấn mẫu để tương tác với dữ liệu. Điều này nhằm mục đích cung cấp cho bạn sự hiểu biết thực tế về những vấn đề phức tạp liên quan đến việc chuẩn bị và quản lý môi trường kho dữ liệu.
+
+### 12.6.1. Exercise 1: Create Database
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvU2V0dGluZyUyMHVwJTIwYSUyMHN0YWdpbmclMjBhcmVhL1NldHRpbmclMjB1cCUyMGElMjBzdGFnaW5nJTIwYXJlYS5tZCIsInRvb2xfdHlwZSI6InRoZWlhZG9ja2VyIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3MjUwMjE4MDB9.3WOPjR78QhS--cUWgfncSrOm52nwWvu4t01IbN3veJw)
+
+
