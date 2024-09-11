@@ -71,6 +71,19 @@
     - [9.7.4. Exercise 4: Create a star schema using the fact and dimension tables](#974-exercise-4-create-a-star-schema-using-the-fact-and-dimension-tables)
     - [9.7.5. Exercise 5: Create the schema on the data warehouse](#975-exercise-5-create-the-schema-on-the-data-warehouse)
     - [9.7.6. Practice Exercises](#976-practice-exercises)
+- [10. Data Modeling with Star and Snowflake Schemas](#10-data-modeling-with-star-and-snowflake-schemas)
+  - [10.1. What is Star Schema](#101-what-is-star-schema)
+  - [10.2. What is Snowflake Schema?](#102-what-is-snowflake-schema)
+  - [10.3. Design a Star Schema](#103-design-a-star-schema)
+  - [10.4. Expand from Star Schema to Snowflake Schema](#104-expand-from-star-schema-to-snowflake-schema)
+  - [10.5. Summary](#105-summary)
+- [11. Data Warehousing with Star and Snowflake schemas](#11-data-warehousing-with-star-and-snowflake-schemas)
+  - [11.1. Why do we use these schemas, and how do they differ?](#111-why-do-we-use-these-schemas-and-how-do-they-differ)
+  - [11.2. Normalization reduces redundancy](#112-normalization-reduces-redundancy)
+  - [11.3. Normalization reduces data size](#113-normalization-reduces-data-size)
+  - [11.4. Comparing benefits: snowflake vs. star data warehouses](#114-comparing-benefits-snowflake-vs-star-data-warehouses)
+  - [11.5. Practical differences](#115-practical-differences)
+  - [11.6. Too much of a good thing?](#116-too-much-of-a-good-thing)
 
 
 # 1. Data Warehouses
@@ -844,3 +857,166 @@ Trong bài tập thực hành này, bạn sẽ phân tích tệp csv bên dướ
 |dateid|Id của date, khóa ngoại liên kết với DimDate|
 |totalsales|Tổng doanh thu|
 
+# 10. Data Modeling with Star and Snowflake Schemas
+
+## 10.1. What is Star Schema
+
+`Star Schema` được xây dựng dựa trên cách các bảng dimension có thể được hình dung như các nhánh tỏa ra từ một bảng fact trung tâm, và liên kết qua các khóa ngoại. Điều này tạo ra một cấu trúc giống như một đồ thị, nơi các nút là các bảng fact và dimension, còn các cạnh là mối quan hệ giữa các bảng.
+
+![Example Star Schema](example_star_schema.png)
+
+`Star schemas thường được sử dụng trong các data marts`, một dạng nhỏ hơn và chuyên biệt của kho dữ liệu.
+
+Ví dụ về Star Schema:
+
+Trung tâm của schema là `Fact Table` cho các giao dịch bán hàng (sale transactions), chứa thông tin như:
+ - Sale ID (khóa chính).
+ - Sale Amount (số tiền bán hàng).
+ - Quantity Sold (số lượng bán).
+ - Discount (giảm giá nếu có).
+
+Xung quanh `Fact Table` là các `Dimension Tables`, ví dụ như:
+
+- Store Table lưu trữ tên và địa chỉ cửa hàng.
+- Product Table lưu thông tin sản phẩm như tên, mã sản phẩm, và danh mục sản phẩm.
+- Date Table lưu ngày tháng của giao dịch.
+
+## 10.2. What is Snowflake Schema?
+
+`Snowflake Schema` là một sự `tổng quát hóa của Star Schema` và có thể được coi là một star schema chuẩn hóa. Chuẩn hóa ở đây có nghĩa là tách các cấp bậc của bảng dimension thành các bảng con riêng biệt.
+
+`Không nhất thiết phải chuẩn hóa hoàn toàn` để được coi là snowflake schema, chỉ cần ít nhất một bảng dimension có các cấp bậc tách ra thành các bảng riêng.
+
+Ví dụ về Snowflake Schema:
+
+- Từ `Star Schema` ở trên, bạn có thể chuẩn hóa Store Table bằng cách tách địa chỉ thành bảng City Table, bảng này chứa thông tin về thành phố mà cửa hàng đặt tại, sau đó thêm City ID vào Store Table để duy trì liên kết.
+
+## 10.3. Design a Star Schema
+
+Khi thiết kế star schema, bạn cần cân nhắc các nguyên tắc sau:
+
+- **Chọn quy trình kinh doanh**: Đây là bước đầu tiên trong việc xác định điều bạn muốn mô hình hóa. Ví dụ, bạn có thể quan tâm đến các quy trình như bán hàng, sản xuất, hoặc chuỗi cung ứng.
+
+- **Chọn mức độ chi tiết (Granularity)**: Mức độ chi tiết bạn muốn nắm bắt trong dữ liệu. Ví dụ, bạn có muốn thu thập dữ liệu ở mức tổng quan như doanh số bán hàng theo năm trong toàn bộ khu vực không, hay bạn muốn chi tiết hơn, như hiệu suất bán hàng hàng tháng theo từng nhân viên bán hàng?
+
+- **Xác định các dimensions**: Bao gồm các thuộc tính như thời gian, tên người, địa điểm, và các yếu tố liên quan khác.
+
+- **Xác định các facts**: Đây là các số liệu cần đo lường trong quy trình kinh doanh. Ví dụ, doanh số bán hàng, số lượng sản phẩm bán ra, hoặc thuế bán hàng.
+
+
+**Ví dụ thực tiễn**: Giả sử bạn là kỹ sư dữ liệu và được giao nhiệm vụ thiết kế một mô hình dữ liệu cho hệ thống Point-of-Sale (POS) của một cửa hàng bán lẻ có tên là “A to Z Discount Warehouse.” Nhiệm vụ của bạn là thu thập dữ liệu về các giao dịch tại quầy thanh toán, nơi khách hàng thanh toán cho các mặt hàng đã mua.
+
+![Example AZDiscoutWarehouse](example_azdiscount_warehouse.png)
+
+- **Quy trình kinh doanh**: Mô hình hóa các giao dịch bán hàng tại điểm bán hàng.
+- **Granularity**: Bạn muốn ghi nhận các thông tin chi tiết từng dòng sản phẩm trên hóa đơn của khách hàng.
+- **Dimensions**: Ngày giờ mua hàng, tên sản phẩm, tên cửa hàng, và nhân viên thu ngân.
+- **Facts**: Giá của mỗi mặt hàng, số lượng bán ra, thuế bán hàng, và giảm giá.
+
+Từ đó, bạn có thể bắt đầu xây dựng Star Schema với `bảng fact trung tâm là POS Fact Table`, chứa các thông tin như:
+
+- POS ID: Mã định danh duy nhất cho từng dòng sản phẩm.
+- Amount: Số tiền của giao dịch.
+- Quantity: Số lượng sản phẩm.
+- Discount: Giảm giá.
+- ...
+
+Các bảng dimension sẽ được liên kết với bảng fact qua các khóa ngoại như:
+
+- Store ID từ bảng Store Table.
+- Product ID từ bảng Product Table.
+- Date ID từ bảng Date Table.
+- ...
+
+![AZWarehouse Star Schema](azwarehouse_star_schema.png)
+
+## 10.4. Expand from Star Schema to Snowflake Schema
+
+Khi `cần chuẩn hóa`, bạn có thể `tách thêm các thông tin từ bảng dimension thành các bảng con`. Ví dụ, từ Store Table, bạn có thể tạo một bảng City Table để lưu thông tin về thành phố, sau đó liên kết thông qua khóa ngoại City ID. Bạn cũng có thể tách thông tin về State, Country, hoặc Sales Region từ Store Table.
+
+Tiếp tục chuẩn hóa các dimensions khác, ví dụ:
+
+- Tách thông tin Brand từ Product Table thành Brand Table.
+- Tách thông tin Category của sản phẩm thành Product Category Table.
+- Tách ngày giao dịch thành Day of Week, Month, Quarter, và Year từ Date Table.
+
+![AZWarehouse SnowFlake Schema](azwarehouse_snowflake_schema.png)
+
+`Quá trình này tạo ra nhiều cấp bậc phân nhánh`, `giống như hình dạng bông tuyết`, và vì vậy được gọi là `Snowflake Schema`.
+
+## 10.5. Summary
+
+- `Facts` và `Dimension Tables` `kết hợp với các khóa ngoại và khóa chính` để tạo thành các mô hình Star Schema và Snowflake Schema.
+- Khi `thiết kế Star Schema`, bạn cần xác định `quy trình kinh doanh`, `mức độ chi tiết`, và `các facts` và `dimensions` liên quan.
+- `Snowflake Schema là phiên bản chuẩn hóa của Star Schema`, trong đó việc chuẩn hóa giúp giảm dung lượng bộ nhớ bằng cách tách các bảng dimension thành các bảng con, tạo ra cấu trúc phân nhánh giống hình bông tuyết.
+
+# 11. Data Warehousing with Star and Snowflake schemas
+
+## 11.1. Why do we use these schemas, and how do they differ?
+
+`Star Schemas được tối ưu hóa cho việc đọc` và được `sử dụng rộng rãi để thiết kế trung tâm dữ liệu`, trong khi `Snowflake Schemas được tối ưu hóa cho việc ghi` và được `sử dụng rộng rãi để lưu trữ dữ liệu giao dịch`. Star Schemas là trường hợp đặc biệt của Snowflake Schemas trong đó tất cả các kích thước phân cấp đã được chuẩn hóa hoặc làm phẳng.
+
+|Atrribute|Star Schema|Snowflake Schema|
+|---|---|---|
+|Tốc độ đọc |Nhanh |Vừa phải |
+|Tốc độ ghi |Vừa phải |Nhanh |
+|Không gian lưu trữ |Trung bình đến cao |Thấp đến trung bình |
+|Rủi ro toàn vẹn dữ liệu |Thấp đến trung bình  |Thấp  |
+|Độ phức tạp của truy vấn  |Đơn giản đến vừa phải |Trung bình đến phức tạp |
+|Độ phức tạp của lược đồ |Đơn giản đến vừa phải |Trung bình đến phức tạp |
+|Phân cấp dimension|Các bảng đơn không chuẩn hóa |Chuẩn hóa trên nhiều bảng |
+|Tham gia theo thứ bậc thứ nguyên |Một  |Một cho mỗi cấp độ  |
+|Sử dụng lý tưởng với|Hệ thống OLAP (Xử lý phân tích trực tuyến), Data Marts |hệ thống OLTP (Xử lý giao dịch trực tiếp) |
+
+## 11.2. Normalization reduces redundancy
+
+Cả lược đồ ngôi sao và bông tuyết đều được hưởng lợi từ việc áp dụng chuẩn hóa. “Chuẩn hóa làm giảm sự dư thừa” là một thành ngữ chỉ ra lợi thế chính được cả hai lược đồ tận dụng.
+
+Chuẩn hóa bảng có nghĩa là tạo cho mỗi thứ nguyên:
+
+1. Khóa thay thế để thay thế khóa tự nhiên, nghĩa là các giá trị duy nhất của cột đã cho
+2. Bảng tra cứu để lưu trữ các cặp khóa thay thế và khóa tự nhiên.
+
+Mỗi giá trị của khóa thay thế được lặp lại chính xác nhiều lần trong bảng chuẩn hóa như khóa tự nhiên trước khi di chuyển khóa tự nhiên sang bảng tra cứu mới. Vì vậy, bạn đã không làm gì để giảm bớt sự dư thừa của bảng gốc.
+
+Tuy nhiên, thứ nguyên thường chứa các nhóm mục xuất hiện thường xuyên, chẳng hạn như “tên thành phố” hoặc “danh mục sản phẩm”. Vì bạn chỉ cần một phiên bản từ mỗi nhóm để xây dựng bảng tra cứu nên bảng tra cứu của bạn sẽ có ít hàng hơn bảng dữ kiện. Nếu có các thứ nguyên con liên quan thì bảng tra cứu có thể vẫn còn một số dư thừa trong các cột thứ nguyên con. Nói cách khác, nếu bạn có thứ nguyên phân cấp, chẳng hạn như “Quốc gia”, “Tiểu bang” và “Thành phố”, bạn có thể lặp lại quy trình ở từng cấp độ để giảm bớt sự dư thừa.
+
+Lưu ý rằng việc chuẩn hóa thêm các thứ nguyên phân cấp của bạn không ảnh hưởng đến kích thước hoặc nội dung của bảng dữ kiện - các mô hình dữ star và snowflake schema có chung các bảng dữ kiện giống hệt nhau.
+
+## 11.3. Normalization reduces data size
+
+Khi chuẩn hóa một bảng, bạn thường giảm kích thước dữ liệu của nó, vì trong quá trình này, bạn có thể thay thế các kiểu dữ liệu đắt tiền, chẳng hạn như chuỗi, bằng các kiểu số nguyên nhỏ hơn nhiều. Nhưng để bảo toàn nội dung thông tin, bạn cũng cần tạo bảng tra cứu mới chứa các đối tượng gốc.
+
+Câu hỏi đặt ra là, bảng mới này có sử dụng ít dung lượng lưu trữ hơn mức tiết kiệm mà bạn vừa đạt được trong bảng chuẩn hóa không?
+
+Đối với dữ liệu nhỏ, câu hỏi này có lẽ không đáng để quan tâm, nhưng đối với dữ liệu lớn, hay chỉ là dữ liệu đang phát triển nhanh chóng thì câu trả lời là có, đó là điều tất yếu. Thật vậy, fact tables của bạn sẽ phát triển nhanh hơn nhiều so với các dimension table, do đó việc chuẩn hóa fact tables của bạn, ít nhất là ở mức độ tối thiểu của star schema có thể được đảm bảo. Bây giờ câu hỏi là cái nào tốt hơn – star hay snowflake?
+
+## 11.4. Comparing benefits: snowflake vs. star data warehouses
+
+`Snowflake, được chuẩn hóa hoàn toàn`, mang lại `ít sự dư thừa nhất và dung lượng lưu trữ nhỏ nhất`. Nếu dữ liệu thay đổi, mức độ dư thừa tối thiểu này có nghĩa là `dữ liệu được phân loại cần phải được thay đổi ở ít vị trí hơn so với yêu cầu đối với lược đồ hình sao`. Nói cách khác, việc ghi nhanh hơn và các thay đổi dễ thực hiện hơn.
+
+`Tuy nhiên`, do cần có `các phép nối bổ sung khi truy vấn dữ liệu nên thiết kế snowflake có thể có tác động bất lợi đến tốc độ đọc`. Bằng cách chuẩn hóa ngược về star schema, bạn có thể tăng hiệu quả truy vấn của mình.
+
+Bạn cũng có thể `chọn con đường trung gian trong việc thiết kế kho dữ liệu của mình`. Bạn có thể chọn lược đồ được chuẩn hóa một phần. Bạn có thể `triển khai snowflake schema làm cơ sở và tạo các chế độ xem hoặc thậm chí các chế độ xem cụ thể hóa dữ liệu không chuẩn hóa`. Ví dụ: bạn có thể mô phỏng star schema trên snowflake schema. Với chi phí phức tạp hơn, bạn có thể chọn từ những gì tốt nhất của cả hai thế giới để tạo ra giải pháp tối ưu đáp ứng yêu cầu của bạn.
+
+## 11.5. Practical differences
+
+Hầu hết các truy vấn bạn áp dụng cho tập dữ liệu, bất kể lựa chọn lược đồ của bạn là gì, đều đi qua bảng dữ kiện. Fact Table của bạn đóng vai trò như một cổng thông tin tới các Dimension Tables của bạn.
+
+`Sự khác biệt thực tế chính giữa star và snowflake schema` theo quan điểm của nhà phân tích `liên quan đến việc truy vấn dữ liệu`. Bạn `cần nhiều kết nối hơn cho snowflake schema để có quyền truy cập vào các cấp độ sâu hơn của thứ nguyên phân cấp`, điều này có thể làm `giảm hiệu suất truy vấn trên lược đồ hình sao`. Do đó, các nhà phân tích dữ liệu và nhà khoa học dữ liệu `có xu hướng thích lược đồ sao đơn giản hơn`.
+
+`Snowflake schema` nhìn chung `phù hợp với việc thiết kế kho dữ liệu` và đặc biệt là `hệ thống xử lý giao dịch`, trong khi `star schema phù hợp hơn để phục vụ Data Marts` hoặc kho dữ liệu có mối quan hệ thứ nguyên thực tế đơn giản. Ví dụ: giả sử bạn có các bản ghi điểm bán hàng tích lũy trong Hệ thống xử lý giao dịch trực tuyến (OLTP) được sao chép dưới dạng quy trình ETL hàng ngày sang một hoặc nhiều hệ thống Xử lý phân tích trực tuyến (OLAP), nơi phân tích tiếp theo khối lượng lớn dữ liệu lịch sử. dữ liệu được thực hiện. Nguồn OLTP có thể sử dụng snowflake để tối ưu hóa hiệu suất cho các lần ghi thường xuyên, trong khi hệ thống OLAP sử dụng lược đồ hình sao để tối ưu hóa cho các lần đọc thường xuyên. Đường dẫn ETL di chuyển dữ liệu giữa các hệ thống bao gồm bước không chuẩn hóa giúp thu gọn từng hệ thống phân cấp của bảng thứ nguyên thành bảng thứ nguyên gốc thống nhất.
+
+## 11.6. Too much of a good thing?
+
+Luôn có sự cân bằng giữa lưu trữ và tính toán sẽ ảnh hưởng đến các lựa chọn thiết kế kho dữ liệu của bạn. Ví dụ: người dùng cuối hoặc ứng dụng của bạn có cần phải tính toán trước các thứ nguyên được lưu trữ như 'ngày trong tuần', 'tháng trong năm' hoặc 'quý' trong năm không? Các cột hoặc bảng hiếm khi được yêu cầu đang chiếm dung lượng đĩa có thể sử dụng được. Có thể tốt hơn là chỉ tính toán các kích thước như vậy trong câu lệnh SQL của bạn khi cần thiết. Ví dụ: với một star schema có dimension table ngày, bạn có thể áp dụng hàm 'MONTH' của SQL dưới dạng MONTH(dim_date.date_column) theo yêu cầu thay vì nối cột tháng được tính toán trước từ bảng MONTH trong lược đồ bông tuyết.
+
+**SCENARIO**
+
+Giả sử bạn được khách hàng giao một mẫu dữ liệu nhỏ từ một tập dữ liệu rất lớn dưới dạng bảng. Họ muốn bạn xem dữ liệu và xem xét các lược đồ tiềm năng cho kho dữ liệu dựa trên mẫu. Tạm thời tạm gác việc thu thập các yêu cầu cụ thể sang một bên, bạn bắt đầu bằng cách khám phá bảng và nhận thấy rằng có chính xác `hai loại cột trong tập dữ liệu - Facts và Dimensions`. `Không có khóa ngoại mặc dù có một chỉ mục`. Bạn coi bảng này như một tập `dữ liệu hoàn toàn không chuẩn hóa` hoặc được làm phẳng.
+ 
+Bạn cũng nhận thấy rằng trong số các thứ nguyên có các cột có `loại dữ liệu tương đối đắt tiền về kích thước lưu trữ, chẳng hạn như chuỗi tên người và địa điểm.`
+
+Ở giai đoạn này, bạn đã biết rằng bạn có thể áp dụng tốt star or snowflake schema cho tập dữ liệu, từ đó chuẩn hóa ở mức độ bạn muốn. Cho dù bạn chọn star hay snowflake, tổng kích thước dữ liệu của bảng dữ kiện trung tâm sẽ giảm đáng kể. Điều này là do `thay vì sử dụng các thứ nguyên trực tiếp trong bảng dữ kiện chính, bạn sử dụng các khóa thay thế`, thường là các số nguyên; và bạn di chuyển các thứ nguyên tự nhiên sang các bảng riêng của chúng hoặc hệ thống phân cấp của các bảng được tham chiếu bởi các khóa thay thế. Ngay cả số nguyên 32 bit cũng nhỏ so với chuỗi 10 ký tự (8 X 10 = 80 bit).
+ 
+Bây giờ, vấn đề là thu thập các yêu cầu và tìm ra sơ đồ chuẩn hóa tối ưu nào đó cho lược đồ của bạn.
