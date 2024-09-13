@@ -98,6 +98,20 @@
   - [13.4. Tools](#134-tools)
   - [13.5. Summary](#135-summary)
   - [13.6. Hands-on Lab: Verifying Data Quality for a Data Warehouse](#136-hands-on-lab-verifying-data-quality-for-a-data-warehouse)
+- [14. Populating a Data Warehouse](#14-populating-a-data-warehouse)
+  - [14.1. Loading Frequency](#141-loading-frequency)
+  - [14.2. Incremental Load and Change Detection](#142-incremental-load-and-change-detection)
+  - [14.3. Data Warehouse Periodic Maintenance](#143-data-warehouse-periodic-maintenance)
+  - [14.4. Example Populating Data](#144-example-populating-data)
+  - [14.5. Summary](#145-summary)
+  - [14.6. Hands-on](#146-hands-on)
+- [15. Querying the Data](#15-querying-the-data)
+  - [15.1. Scenario](#151-scenario)
+  - [15.2. ShinyAutoSales - ERD](#152-shinyautosales---erd)
+  - [15.3. View the tables](#153-view-the-tables)
+  - [15.4. Denormalized View](#154-denormalized-view)
+  - [15.5. Applying CUBE and ROLLUP to the materialized view](#155-applying-cube-and-rollup-to-the-materialized-view)
+  - [15.6. Hands-on](#156-hands-on)
 
 
 # 1. Data Warehouses
@@ -1177,4 +1191,274 @@ Việc duy trì chất lượng dữ liệu không chỉ giúp giảm thiểu r�
 ## 13.6. Hands-on Lab: Verifying Data Quality for a Data Warehouse
 
 [Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvVmVyaWZ5aW5nJTIwRGF0YSUyMFF1YWxpdHklMjBmb3IlMjBhJTIwRGF0YSUyMFdhcmVob3VzZS9WZXJpZnlpbmclMjBEYXRhJTIwUXVhbGl0eSUyMGZvciUyMGElMjBEYXRhJTIwV2FyZWhvdXNlLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNjAzNzIwNn0.fDGoN3u4As3IzmuG2AfKHQVAix1QjCpOdl2oN4uOxxU)
+
+# 14. Populating a Data Warehouse
+
+## 14.1. Loading Frequency
+
+Nhập dữ liệu vào Data Warehouse của doanh nghiệp là một quá trình liên tục bao gồm hai giai đoạn:
+
+- **Tải ban đầu (Initial Load)**: Đây là bước đầu tiên khi bạn tải toàn bộ dữ liệu vào Data Warehouse.
+- **Tải dữ liệu từng phần (Incremental Load)**: Đây là quá trình định kỳ, có thể là hàng ngày hoặc hàng tuần, để cập nhật những thay đổi mới trong dữ liệu.
+
+**Một ví dụ thực tế**: bạn có thể tải các giao dịch bán hàng mới vào Data Warehouse vào mỗi cuối tuần, trong khi các danh sách thành phố hoặc cửa hàng (các bảng dimension) hiếm khi thay đổi và chỉ cần cập nhật định kỳ khi có sự thay đổi lớn.
+
+1. Tải ban đầu và tải từng phần
+
+- `Fact tables` là các bảng chứa các dữ liệu giao dịch, thường thay đổi liên tục và cần cập nhật thường xuyên.
+- `Dimension tables` chứa các thông tin tĩnh hơn, như danh sách thành phố, loại sản phẩm, hoặc thông tin nhân viên, và thường không thay đổi nhiều.
+
+Ví dụ: Bảng fact có thể chứa thông tin về các giao dịch bán hàng diễn ra hàng ngày, trong khi bảng dimension có thể chứa thông tin về các cửa hàng bán hàng, không cần cập nhật quá thường xuyên.
+
+2. Công cụ hỗ trợ quá trình nhập liệu
+
+Nhiều công cụ có sẵn để tự động hóa quá trình này, ví dụ:
+
+- Db2 Load Utility có thể tải dữ liệu nhanh hơn so với việc chèn từng dòng.
+- Công cụ `Apache Airflow` và `Apache Kafka` cũng được dùng để tự động hóa quá trình nhập dữ liệu trong các ETL pipelines.
+
+Ngoài ra, bạn cũng có thể tự viết các script sử dụng các công cụ như Bash, Python, và SQL để xây dựng pipeline dữ liệu và sử dụng cron để định lịch.
+
+3. Quá trình nhập dữ liệu ban đầu
+
+Trước khi bắt đầu nhập dữ liệu, cần đảm bảo rằng:
+
+- Schema đã được mô hình hóa.
+- Dữ liệu đã được chuyển qua giai đoạn staging vào các bảng hoặc file.
+- Có cơ chế để kiểm tra chất lượng dữ liệu.
+
+Sau đó, quá trình nhập dữ liệu bắt đầu với:
+
+- Khởi tạo Data Warehouse và tạo bảng theo schema đã thiết lập.
+- Thiết lập mối quan hệ giữa các bảng fact và dimension.
+- Tải dữ liệu đã làm sạch và chuẩn bị vào các bảng từ staging tables.
+
+## 14.2. Incremental Load and Change Detection
+
+Sau khi tải dữ liệu ban đầu, bước tiếp theo là thiết lập quá trình tải dữ liệu từng phần để cập nhật thường xuyên.
+
+- **Tải dữ liệu từng phần (Incremental Load)**: Đây là việc chỉ cập nhật những bản ghi mới, thay đổi, hoặc đã bị xóa kể từ lần tải cuối cùng.
+- **Phát hiện thay đổi (Change Detection)**: Cần phát hiện những thay đổi trong hệ thống nguồn, ví dụ, thông qua timestamps ghi lại thời gian tạo hoặc cập nhật dữ liệu.
+
+Ví dụ: Nếu bạn có một bảng chứa thông tin địa chỉ khách hàng, mỗi khi một địa chỉ được thay đổi, bạn chỉ cần tải các thay đổi này thay vì tải lại toàn bộ bảng.
+
+Một số hệ thống cung cấp cơ chế phát hiện thay đổi, nhưng trong trường hợp không có, bạn có thể sử dụng phương pháp so sánh đối chiếu toàn bộ dữ liệu, mặc dù phương pháp này chỉ phù hợp khi kích thước dữ liệu nguồn không quá lớn.
+
+## 14.3. Data Warehouse Periodic Maintenance
+
+Data Warehouse cần được bảo trì định kỳ, có thể là hàng tháng hoặc hàng năm, để lưu trữ dữ liệu cũ và ít được sử dụng.
+
+- **Lưu trữ (Archive)**: Dữ liệu cũ có thể được chuyển sang các kho lưu trữ có tốc độ truy xuất chậm hơn nhưng ít tốn chi phí hơn.
+- **Xóa dữ liệu cũ (Delete old data)**: Dữ liệu không còn hữu ích sẽ được loại bỏ khỏi hệ thống để tối ưu hiệu suất.
+
+## 14.4. Example Populating Data
+
+Hãy cùng xem một ví dụ thực tế về cách nhập dữ liệu thủ công vào Data Warehouse với sơ đồ sao (Star Schema) của một công ty bán ô tô giả định tên là Shiny Auto Sales.
+
+Dữ liệu bán hàng có các cột sau:
+
+- `“sales ID”` là mã hóa đơn bán hàng.
+- `“emp no”` là mã số nhân viên.
+- `“class ID”` là mã loại xe bán ra, ví dụ "small SUV".
+- `“date”` là ngày giao dịch.
+- `“amount”` là số tiền bán hàng (fact chính trong bảng fact).
+
+![Example: autosale data](example_sales_data.png)
+
+Trong ví dụ này, chúng ta sẽ sử dụng PSQL, giao diện dòng lệnh của PostgreSQL, để tạo và nhập liệu vào bảng DimSalesPerson (bảng dimension của nhân viên bán hàng).
+
+**Tạo bảng Dimension**
+
+Dùng lệnh CREATE TABLE để tạo bảng DimSalesPerson:
+
+```SQL
+CREATE TABLE sales.DimSalesPerson (
+  SalesPersonID SERIAL primary key,
+  SalesPersonAltID varchar(10) not null,
+  SalesPersonName varchar(50)
+)
+```
+
+Sau khi tạo bảng, ta sử dụng lệnh INSERT INTO để thêm dữ liệu vào bảng này, ví dụ:
+
+```SQL
+INSERT INTO sales.DimSalesPerson(SalesPersonAltID, SalesPersonName)
+values
+(617, 'Gocart Joe'),
+(642, 'Jake Salesbouroughs'),
+(680, 'Cadillac Jack'),
+(707, 'Jane Honda'),
+(720, 'Keyla Keycar'),
+(607, 'William Jeepman'),
+(609, 'Happy Dollarmaker'),
+(711, 'Sally Caraway');
+```
+
+Dữ liệu cho các dimension khác cũng được nhập theo cách tương tự.
+
+**Tạo bảng Fact**
+
+Tiếp theo, ta tạo bảng fact cho giao dịch bán hàng với lệnh:
+
+```SQL
+CREATE TABLE sales.FactAutoSales(
+  TransactionID bigserial primary key,
+  SalesID int not null,
+  SalesDateKey int,
+  AutoClassID int not null,
+  SalesPersonID int not null,
+  Amount money
+)
+```
+
+**Thiết lập mối quan hệ giữa các bảng**
+
+Sau khi tạo bảng, ta cần thiết lập quan hệ giữa các bảng fact và dimension. Ví dụ, dùng lệnh ALTER TABLE và ADD CONSTRAINT để tạo khóa ngoại:
+
+```SQL
+ALTER TABLE sales.FactAutoSales
+ADD CONSTRAINT
+KV_AutoClassID FOREIGN KEY (AutoClassID)
+REFERENCES
+sales.DimAutoCategory(AutoClassID)
+```
+
+**Nhập dữ liệu vào bảng Fact**
+
+Cuối cùng, ta dùng lệnh INSERT INTO để nhập dữ liệu vào bảng fact:
+
+```SQL
+INSERT INTO sales.FactAutoSales(
+  SalesID,
+  Amount,
+  SalesPersonID,
+  AutoClassID,
+  SalesDateKey
+)
+values
+(1629, 42000.00, 2, 1, 4),
+(1630, 17680.00, 1, 2, 4),
+(1631, 37100.00, 2, 2, 5);
+```
+
+## 14.5. Summary
+
+- Quá trình nhập dữ liệu vào Data Warehouse bao gồm tải ban đầu và tải dữ liệu từng phần.
+- Fact tables thường xuyên thay đổi, trong khi dimension tables khá tĩnh.
+- Bạn có thể tự động hóa quá trình nhập dữ liệu và bảo trì định kỳ của Data Warehouse bằng các công cụ hoặc script.
+
+## 14.6. Hands-on
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQklXb3JrYXJvdW5kRmlsZXMvd2VlazIvUG9wdWxhdGluZ19kYXRhd2FyZWhvdXNlX3dpdGhfcG9zdGdyZXMubWQiLCJ0b29sX3R5cGUiOiJ0aGVpYW9wZW5zaGlmdCIsImFkbWluIjpmYWxzZSwiaWF0IjoxNzIyODYxNTUwfQ.aBsSwOkitqvgplLag0F7G6m53j0DklBu9EpwjxZWNVw)
+
+**PRACTICE**
+
+**Bài toán 1**: Sử dụng công cụ PostgreSQL tìm số hàng trong bảng FactBilling
+
+```SQL
+SELECT count(*) from public."FactBilling";
+```
+
+**Bài toán 2**: Sử dụng công cụ PostgreSQL, tạo một chế độ xem cụ thể hóa đơn giản có tên avg_customer_bill với các trường customerid và averagebillamount.
+
+```SQL
+CREATE MATERIALIZED VIEW avg_customer_bill (customerid, averagebillamount)
+AS 
+(SELECT customerid, avg(billamount) 
+FROM public."FactBilling" 
+GROUP BY customerid
+);
+```
+
+**Bài toán 3**: Làm mới các khung nhìn Materialized mới được tạo
+
+```SQL
+REFRESH MATERIALIZED VIEW avg_customer_bill;
+```
+
+**Bài toán 4**: Sử dụng các chế độ xem Materialized mới được tạo để tìm những khách hàng có hóa đơn trung bình lớn hơn 11000.
+
+```SQL
+SELECT * 
+FROM avg_customer_bill
+WHERE averagebillamount > 11000;
+```
+
+# 15. Querying the Data
+
+Nhắc lại về Materialized View: `Materialized view cho phép bạn tạo ra một bảng được lưu trữ mà bạn có thể làm mới theo lịch trình hoặc khi cần`. Khi một view phức tạp, thường xuyên được yêu cầu, hoặc chạy trên tập dữ liệu lớn, việc materialize view có thể giúp giảm tải cho cơ sở dữ liệu. Do `dữ liệu đã được tính trước`, việc `truy vấn materialized view thường nhanh hơn so với việc truy vấn các bảng cơ bản`.
+
+Kết hợp các thao tác CUBE hoặc ROLLUP với materialized view có thể nâng cao hiệu suất, và bạn thậm chí có thể tạo materialized cho chính CUBE hoặc ROLLUP đó.
+
+## 15.1. Scenario
+
+Bạn có nhiệm vụ tạo một bảng tóm tắt trực tiếp để báo cáo doanh số bán hàng tháng 1 của các nhân viên bán hàng và các loại ô tô cho doanh nghiệp ShinyAutoSales.
+
+Bắt đầu bằng cách tìm hiểu star schema trong kho dữ liệu của họ được gọi là `sasDW` dựa trên PostgreSQL. Sau đó khám phá các dữ liệu ShinyAutoSales có liên quan bằng cách truy vấn các bảng từ `sales` star schema trong sasWD.
+
+Sau khi khám phá xong lược đồ, bạn quyết định tạo một Materialized View như một staging table. Việc tạo một chế độ xem dưới dạng staging table như vậy sẽ vẫn cung cấp được dữ liệu mình cần trong khi tối thiểu hóa tác động đến csdl. Có thể làm mới (refesh) view dần dần vào những giờ thấp điểm.
+
+## 15.2. ShinyAutoSales - ERD
+
+![ShinyAutoSales ERD](shinyautosales_erd.png)
+
+Table màu đỏ chính là fact table.
+
+## 15.3. View the tables
+
+Giả sử rằng đã kết nối vào csdl mà công ty cung cấp và vào được kho dữ liệu sasWD, với giao diện PostgreSQL như sau:
+
+![PostgresSQL interface](psql_interface.png)
+
+Ta cùng xem qua Fact Table
+
+![Fact Table](sales_fact_table.png)
+
+Tiếp tục xem các Dimension Tables
+
+![View Auto Category Table](view_auto_category.png)
+
+![View Sales Person](view_sales_person.png)
+
+![View Date](view_date.png)
+
+## 15.4. Denormalized View
+
+Ở giai đoạn này, sẽ thuận tiện hơn nếu có một bảng dữ liệu chứa các cột mà con người có thể dễ dàng hiểu được, thay vì chỉ là các khóa như fact table. Về cơ bản, chúng ta muốn tạo một bảng không chuẩn hóa bằng cách join các dimension tables lại.
+
+![denormailized_view](denormalized_view.png)
+
+Thay vì cứ select quài một câu lệnh, ta có thể tạo một bảng xem Materialized View với tên gọi là `DNsales` như sau:
+
+![denormalized_view_materialized_view](denormalized_view_materialized_view.png)
+
+Ta cùng xem trong `DNsales` này có gì:
+
+![DNsales_view](DNsales_view.png)
+
+## 15.5. Applying CUBE and ROLLUP to the materialized view
+
+1. Ta có thể áp dụng CUBE cho `DNsales` như sau:
+
+Ta chọn `autoclassname`, `salespersonname`, và tổng số tiền bán hàng với điều kiện hàng bán ra là `new` và cuối cùng gom nhóm theo `autoclassname` và `salespersonname` và đầu ra sẽ trông thế này:
+
+![apply_cube_dnsales](apply_cube_dnsales.png)
+
+Ở hàng đầu tiên, không có mục nào trong 2 cột `autoclassname` và `salespersonname`, điều này có nghĩa là đếm tất cả thể hiện tổng doanh thu cho các hàng "mới" được bán ra.
+
+Và khối tiếp theo, khối mà có thông tin ở cả hai cột. Có thể đọc ví dụ như sau:
+
+- Ở hàng `|Midsize SUV | Gocart Joe | 32,099,00|` có thể được đọc là tổng doanh thu bán xe Midsize SUV mới được bán bởi Gocart Joe là 32,099,00 USD.
+
+Tương tự ở hai khối tiếp theo nơi mà một cột bị khuyết ở khối này thể hiện doanh thu của riêng cá thể đó.
+
+2. Tương tự áp dụng ROLLUP vào `DNsales` giống hệt ở trên chỉ thay chữ CUBE thành ROLLUP:
+
+![apply_rollup_dnsales](apply_rollup_dnsales.png)
+
+Kết quả gần như tương tự chỉ thiếu đi 5 hàng mà chỉ có cột `salespersonname`. Vậy ta có thể thấy CUBE sẽ tạo ra tất cả các hoán vị mà có thể `GROUP BY`, còn ROLLUP chỉ tạo ra hoán vị duy nhất được xác định theo thứ tự được liệt kê trong lệnh gọi ROLLUP (ở đây là `autoclassname, salespersonname`) 
+
+## 15.6. Hands-on
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAyNjBFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQklXb3JrYXJvdW5kRmlsZXMvd2VlazIvUXVlcnlpbmdfZHdfY3ViZXNfcm9sbHVwc19ncm91cGluZ3NldHNfTVFULm1kIiwidG9vbF90eXBlIjoidGhlaWFvcGVuc2hpZnQiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyMzgwNjU3OX0.EB_qnA2t3Jpug_HwJsbBz4uD-FXzit-K9K63yian4gg)
 
