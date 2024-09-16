@@ -242,23 +242,23 @@ Mệnh đề CUBE được sử dụng trong GROUP BY để tạo tổng phụ c
 Task 16: Tạo Materialized View tên `max_sales` bằng cách sử dụng các cột thành phố, id sản phẩm, loại sản phẩm và doanh số tối đa.
 
 ```SQL
-    CREATE MATERIALIZED VIEW max_sales AS
-    SELECT
-        cs.City,
-        p.Productid,
-        p.Producttype,
-        MAX(f.Price_PerUnit * f.QuantitySold) AS MaxSales
-    FROM
-        FactSales f
-    JOIN
-        DimProduct p ON f.Productid = p.Productid
-    JOIN
-        DimCustomerSegment cs ON f.Segmentid = cs.Segmentid
-    GROUP BY
-        cs.City,
-        p.Productid,
-        p.Producttype
-    WITH DATA;
+CREATE MATERIALIZED VIEW max_sales AS
+SELECT
+    cs.City,
+    p.Productid,
+    p.Producttype,
+    MAX(f.Price_PerUnit * f.QuantitySold) AS MaxSales
+FROM
+    FactSales f
+JOIN
+    DimProduct p ON f.Productid = p.Productid
+JOIN
+    DimCustomerSegment cs ON f.Segmentid = cs.Segmentid
+GROUP BY
+    cs.City,
+    p.Productid,
+    p.Producttype
+WITH DATA;
 ```
 
 Câu lệnh này sẽ tạo chế độ xem cụ thể hóa và điền vào đó dữ liệu hiện tại từ các bảng đã nối. Mệnh đề `WITH DATA` yêu cầu PostgreSQL điền kết quả truy vấn vào khung nhìn ngay lập tức. Nếu bạn muốn tạo chế độ xem mà không điền dữ liệu vào đó, bạn sẽ sử dụng `WITH NO DATA`.
