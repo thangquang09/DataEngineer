@@ -226,7 +226,7 @@ ORDER BY
     d.year DESC, s.city, s.Stationid;
 ```
 
-Tạo materialized view có tên `max_waste_stats` bằng cách sử dụng các cột city, stationid, trucktype, and max waste collected. 
+Task 16: Tạo materialized view có tên `max_waste_stats` bằng cách sử dụng các cột city, stationid, trucktype, and max waste collected. 
 
 ```SQL
 CREATE MATERIALIZED VIEW max_waste_stats AS
