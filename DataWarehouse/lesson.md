@@ -336,7 +336,7 @@ Data Lake là một kho lưu trữ dữ liệu có khả năng lưu trữ một 
 
 **Ví dụ thực tế**: `Google Drive` hoặc `Amazon S3` có thể được xem như các dạng đơn giản của Data Lake, nơi bạn lưu trữ nhiều loại file khác nhau mà không cần phải sắp xếp hay phân loại chi tiết từ ban đầu.
 
-![example data lake](example_datalake.png)
+![example data lake](image/example_datalake.png)
 
 ## 4.2. Benefit ot Data Lake
 
@@ -440,7 +440,7 @@ Trong kiến trúc này, chúng ta có các tầng hoặc thành phần chính, 
 
 - **Tầng phân tích và công cụ BI (Analytics Layer & BI Tools)**: Đây là các công cụ phân tích và tình báo kinh doanh giúp tạo ra báo cáo, dashboard, và phân tích dữ liệu.
 
-![example EDW architecture](example_EDW_architecture.png)
+![example EDW architecture](image/example_EDW_architecture.png)
 
 ## 6.2. Security in Data Warehouse
 
@@ -467,7 +467,7 @@ Tiếp theo, chúng ta sẽ tìm hiểu về kiến trúc tham chiếu cho data 
 - **Tầng trình bày (Presentation Layer)**:
     Các ứng dụng tại tầng này cung cấp khả năng truy cập dữ liệu cho các nhóm người dùng khác nhau như chuyên viên phân tích marketing, người dùng, và đại lý. Dữ liệu có thể được tiêu thụ thông qua web pages và cổng thông tin hoặc qua các dịch vụ web (web services).
 
-![Example of IBM reference architecrture](example_ibmreference_architecture.png)
+![Example of IBM reference architecrture](image/example_ibmreference_architecture.png)
 
 ## 6.4. Support Application from IBM
 
@@ -504,7 +504,7 @@ Hãy xem xét ví dụ về một hệ thống OLAP (Online Analytical Processin
 
 Mỗi ô của cube có thể chứa một giá trị như 243 (nghìn đô la), tương ứng với doanh thu bán hàng của một loại sản phẩm tại một bang cụ thể trong một năm nhất định.
 
-![Example Data Cube](example_datacube.png)
+![Example Data Cube](image/example_datacube.png)
 
 ## 7.2. Data Cube Operation
 
@@ -512,31 +512,31 @@ Mỗi ô của cube có thể chứa một giá trị như 243 (nghìn đô la),
 
 Là quá trình chọn một thành phần duy nhất từ một dimension để thu hẹp cube. Ví dụ, bạn có thể chọn chỉ năm 2018 từ dimension Year, cho phép bạn phân tích tổng doanh thu của tất cả các bang và sản phẩm chỉ trong năm đó.
 
-![Example Data Slicing](example_dataslicing.png)
+![Example Data Slicing](image/example_dataslicing.png)
 
 ### 7.2.2. Dicing
 
 Tương tự như slicing, nhưng bạn chọn một tập hợp con của các giá trị từ một dimension. Ví dụ, chọn chỉ các sản phẩm "Áo phông", "Áo khoác", và "Giày", giúp bạn thu hẹp phạm vi phân tích xuống các sản phẩm cụ thể.
 
-![Example Data Dicing](example_datadicing.png)
+![Example Data Dicing](image/example_datadicing.png)
 
 ### 7.2.3. Drilling Up or Down
 
 Trong một số dimension, có thể có các `hierarchies` (cấp bậc) mà bạn có thể drill down vào để xem chi tiết hơn. Ví dụ, khi bạn drill down vào category "Áo phông", có thể bạn sẽ thấy các nhóm sản phẩm con như "Áo phông cổ tròn", "Áo phông cổ tim". Ngược lại, drill up sẽ đưa bạn trở lại mức tổng quát hơn.
 
-![Example Data Drilling Up or Down](example_datadrilling.png)
+![Example Data Drilling Up or Down](image/example_datadrilling.png)
 
 ### 7.2.4. Pivoting
 
 Là quá trình xoay data cube để thay đổi góc nhìn. Ví dụ, thay vì phân tích theo năm trước tiên, bạn có thể xoay cube để phân tích theo sản phẩm trước, sau đó là bang.
 
-![Example Data Pivoting](example_datapivoting.png)
+![Example Data Pivoting](image/example_datapivoting.png)
 
 ### 7.2.5. Rolling Up
 
 Là quá trình tóm tắt dữ liệu dọc theo một dimension. Bạn có thể tính tổng, đếm, hoặc tính trung bình. Ví dụ, tính trung bình doanh thu bán áo phông ở các bang bằng cách tổng hợp doanh thu của từng bang rồi chia cho số bang.
 
-![Example Rolling Up](example_rollingup.png)
+![Example Rolling Up](image/example_rollingup.png)
 
 ## 7.3. Materialized Views
 
@@ -607,11 +607,11 @@ Bạn có thể mở rộng chức năng của mệnh đề `GROUP BY` bằng c�
 
 Hãy bắt đầu với một ví dụ về tổng hợp GROUP BY thông thường và sau đó so sánh kết quả với kết quả sử dụng mệnh đề `GROUPING SETS`. Chúng tôi sẽ sử dụng dữ liệu từ một công ty hư cấu có tên là Shiny Auto Sales. Lược đồ kho hàng của công ty được hiển thị trong sơ đồ mối quan hệ thực thể trong Hình dưới đây:
 
-![Shiny Auto Sales Schema](shiny_auto_sales_schema.png)
+![Shiny Auto Sales Schema](image/shiny_auto_sales_schema.png)
 
 Chúng tôi sẽ làm việc với một chế độ xem được cụ thể hóa một cách thuận tiện về một bảng dữ kiện hoàn toàn không chuẩn hóa từ lược đồ sao bán hàng, được gọi là `DNsale`, trông giống như sau: 
 
-![SELECT * FROM DNsales](selectfull.png)
+![SELECT * FROM DNsales](image/selectfull.png)
 
 Bảng `DNsale` này được tạo bằng cách nối tất cả các bảng thứ nguyên với bảng thực tế trung tâm và chỉ chọn các cột được hiển thị. Mỗi bản ghi trong `DNsale` chứa thông tin chi tiết về một giao dịch bán hàng riêng lẻ. 
 
@@ -633,7 +633,7 @@ GROUP BY
 
 Kết quả trông như thế này: 
 
-![Result of Group by and sum query](select_group_by.png)
+![Result of Group by and sum query](image/select_group_by.png)
 
 ### 8.2.2. Example 2
 
@@ -654,7 +654,7 @@ GROUPING SETS(autoclassname, salespersonname)
 
 Đây là kết quả truy vấn. Lưu ý rằng bốn hàng đầu tiên giống hệt với kết quả của Ví dụ 1, trong khi 5 hàng tiếp theo là kết quả bạn sẽ nhận được bằng cách thay thế tên nhân viên bán hàng cho tên tự động phân loại trong Ví dụ 1. 
 
-![Result of Group by + grouping set query](select_group_by_grouping_sets.png)
+![Result of Group by + grouping set query](image/select_group_by_grouping_sets.png)
 
 Về cơ bản, việc áp dụng `GROUPING SETS` cho hai thứ nguyên, `salespersonname` và `autoclassname` sẽ mang lại cùng một kết quả mà bạn sẽ nhận được bằng cách thêm hai kết quả riêng lẻ của việc áp dụng `GROUP BY` cho từng thứ nguyên riêng biệt như trong Ví dụ 1. 
 
@@ -711,7 +711,7 @@ Ví dụ về Dimension Tables:
 - **Temporal Table**: Mô tả thời gian với độ phân giải chi tiết, như ngày, tháng, năm.
 - **Geography Table**: Mô tả địa điểm như quốc gia, bang, thành phố, và mã bưu điện.
 
-![Example Dimension Table](example_dimensiontable.png)
+![Example Dimension Table](image/example_dimensiontable.png)
 
 ## 9.5 Example of Data Modeling
 
@@ -719,7 +719,7 @@ Ví dụ về Dimension Tables:
 
 **Bài toán: Bán hàng tại đại lý ô tô**
 
-![Example Schema Relation of Fact table and Dimension table](example_relation_fact_dimension_table.png)
+![Example Schema Relation of Fact table and Dimension table](image/example_relation_fact_dimension_table.png)
 
 - Fact Table: Bảng lưu trữ thông tin về các giao dịch bán hàng.
     - Sale Date: Ngày bán hàng.
@@ -790,7 +790,7 @@ Chúng ta cần thiết kế một kho dữ liệu có thể hỗ trợ các tru
 
 Dưới đây là năm hàng được chọn ngẫu nhiên từ tệp csv.
 
-![The head of csv file](head_csv_file.png)
+![The head of csv file](image/head_csv_file.png)
 
 ### 9.7.2. Exercise 2: Design the fact tables
 
@@ -846,17 +846,17 @@ Dựa vào 2 bài tập trước hiện tại chúng ta đã có 3 bảng, chún
 
 Khi chúng ta sắp xếp các bảng trên theo kiểu Star Schema, chúng ta sẽ có được cấu trúc bảng trông giống như trong hình bên dưới.
 
-![Star Schema Created by Fact Tables and Dimension Tables](star_schema.png)
+![Star Schema Created by Fact Tables and Dimension Tables](image/star_schema.png)
 
 ### 9.7.5. Exercise 5: Create the schema on the data warehouse
 
-[SQL Script Using PostgreSQL](star-schema.sql)
+[SQL Script Using PostgreSQL](image/star-schema.sql)
 
 ### 9.7.6. Practice Exercises
 
 Trong bài tập thực hành này, bạn sẽ phân tích tệp csv bên dưới, chứa dữ liệu về doanh số bán hàng hàng ngày tại các cửa hàng khác nhau của một nhà bán lẻ thời trang quốc tế.
 
-![Fashion retailer CSV](fashion_retailer_csv.png)
+![Fashion retailer CSV](image/fashion_retailer_csv.png)
 
 1. Thiết kế lược đồ cho dimension table DimStore.
 
@@ -895,7 +895,7 @@ Trong bài tập thực hành này, bạn sẽ phân tích tệp csv bên dướ
 
 `Star Schema` được xây dựng dựa trên cách các bảng dimension có thể được hình dung như các nhánh tỏa ra từ một bảng fact trung tâm, và liên kết qua các khóa ngoại. Điều này tạo ra một cấu trúc giống như một đồ thị, nơi các nút là các bảng fact và dimension, còn các cạnh là mối quan hệ giữa các bảng.
 
-![Example Star Schema](example_star_schema.png)
+![Example Star Schema](image/example_star_schema.png)
 
 `Star schemas thường được sử dụng trong các data marts`, một dạng nhỏ hơn và chuyên biệt của kho dữ liệu.
 
@@ -938,7 +938,7 @@ Khi thiết kế star schema, bạn cần cân nhắc các nguyên tắc sau:
 
 **Ví dụ thực tiễn**: Giả sử bạn là kỹ sư dữ liệu và được giao nhiệm vụ thiết kế một mô hình dữ liệu cho hệ thống Point-of-Sale (POS) của một cửa hàng bán lẻ có tên là “A to Z Discount Warehouse.” Nhiệm vụ của bạn là thu thập dữ liệu về các giao dịch tại quầy thanh toán, nơi khách hàng thanh toán cho các mặt hàng đã mua.
 
-![Example AZDiscoutWarehouse](example_azdiscount_warehouse.png)
+![Example AZDiscoutWarehouse](image/example_azdiscount_warehouse.png)
 
 - **Quy trình kinh doanh**: Mô hình hóa các giao dịch bán hàng tại điểm bán hàng.
 - **Granularity**: Bạn muốn ghi nhận các thông tin chi tiết từng dòng sản phẩm trên hóa đơn của khách hàng.
@@ -960,7 +960,7 @@ Các bảng dimension sẽ được liên kết với bảng fact qua các khóa
 - Date ID từ bảng Date Table.
 - ...
 
-![AZWarehouse Star Schema](azwarehouse_star_schema.png)
+![AZWarehouse Star Schema](image/azwarehouse_star_schema.png)
 
 ## 10.4. Expand from Star Schema to Snowflake Schema
 
@@ -972,7 +972,7 @@ Tiếp tục chuẩn hóa các dimensions khác, ví dụ:
 - Tách thông tin Category của sản phẩm thành Product Category Table.
 - Tách ngày giao dịch thành Day of Week, Month, Quarter, và Year từ Date Table.
 
-![AZWarehouse SnowFlake Schema](azwarehouse_snowflake_schema.png)
+![AZWarehouse SnowFlake Schema](image/azwarehouse_snowflake_schema.png)
 
 `Quá trình này tạo ra nhiều cấp bậc phân nhánh`, `giống như hình dạng bông tuyết`, và vì vậy được gọi là `Snowflake Schema`.
 
@@ -1073,7 +1073,7 @@ Hãy tưởng tượng một doanh nghiệp muốn xây dựng một hệ thốn
 
 Dữ liệu từ các hệ thống này sẽ được trích xuất vào các bảng dự trữ riêng biệt, được tạo trong Cơ sở dữ liệu Dự trữ. Sau đó, dữ liệu sẽ được chuyển đổi trong khu vực dự trữ bằng các truy vấn SQL để phù hợp với yêu cầu của hệ thống kế toán chi phí. Khi đã được chuyển đổi, dữ liệu sẽ được tích hợp (joined) thành một bảng duy nhất và sau đó tải vào hệ thống kế toán.
 
-![DW with Staging Area](dw_staging_area.png)
+![DW with Staging Area](image/dw_staging_area.png)
 
 ## 12.3. Main functions of Staging Area
 
@@ -1267,7 +1267,7 @@ Dữ liệu bán hàng có các cột sau:
 - `“date”` là ngày giao dịch.
 - `“amount”` là số tiền bán hàng (fact chính trong bảng fact).
 
-![Example: autosale data](example_sales_data.png)
+![Example: autosale data](image/example_sales_data.png)
 
 Trong ví dụ này, chúng ta sẽ sử dụng PSQL, giao diện dòng lệnh của PostgreSQL, để tạo và nhập liệu vào bảng DimSalesPerson (bảng dimension của nhân viên bán hàng).
 
@@ -1404,7 +1404,7 @@ Sau khi khám phá xong lược đồ, bạn quyết định tạo một Materia
 
 ## 15.2. ShinyAutoSales - ERD
 
-![ShinyAutoSales ERD](shinyautosales_erd.png)
+![ShinyAutoSales ERD](image/shinyautosales_erd.png)
 
 Table màu đỏ chính là fact table.
 
@@ -1412,33 +1412,33 @@ Table màu đỏ chính là fact table.
 
 Giả sử rằng đã kết nối vào csdl mà công ty cung cấp và vào được kho dữ liệu sasWD, với giao diện PostgreSQL như sau:
 
-![PostgresSQL interface](psql_interface.png)
+![PostgresSQL interface](image/psql_interface.png)
 
 Ta cùng xem qua Fact Table
 
-![Fact Table](sales_fact_table.png)
+![Fact Table](image/sales_fact_table.png)
 
 Tiếp tục xem các Dimension Tables
 
-![View Auto Category Table](view_auto_category.png)
+![View Auto Category Table](image/view_auto_category.png)
 
-![View Sales Person](view_sales_person.png)
+![View Sales Person](image/view_sales_person.png)
 
-![View Date](view_date.png)
+![View Date](image/view_date.png)
 
 ## 15.4. Denormalized View
 
 Ở giai đoạn này, sẽ thuận tiện hơn nếu có một bảng dữ liệu chứa các cột mà con người có thể dễ dàng hiểu được, thay vì chỉ là các khóa như fact table. Về cơ bản, chúng ta muốn tạo một bảng không chuẩn hóa bằng cách join các dimension tables lại.
 
-![denormailized_view](denormalized_view.png)
+![denormailized_view](image/denormalized_view.png)
 
 Thay vì cứ select quài một câu lệnh, ta có thể tạo một bảng xem Materialized View với tên gọi là `DNsales` như sau:
 
-![denormalized_view_materialized_view](denormalized_view_materialized_view.png)
+![denormalized_view_materialized_view](image/denormalized_view_materialized_view.png)
 
 Ta cùng xem trong `DNsales` này có gì:
 
-![DNsales_view](DNsales_view.png)
+![DNsales_view](image/DNsales_view.png)
 
 ## 15.5. Applying CUBE and ROLLUP to the materialized view
 
@@ -1446,7 +1446,7 @@ Ta cùng xem trong `DNsales` này có gì:
 
 Ta chọn `autoclassname`, `salespersonname`, và tổng số tiền bán hàng với điều kiện hàng bán ra là `new` và cuối cùng gom nhóm theo `autoclassname` và `salespersonname` và đầu ra sẽ trông thế này:
 
-![apply_cube_dnsales](apply_cube_dnsales.png)
+![apply_cube_dnsales](image/apply_cube_dnsales.png)
 
 Ở hàng đầu tiên, không có mục nào trong 2 cột `autoclassname` và `salespersonname`, điều này có nghĩa là đếm tất cả thể hiện tổng doanh thu cho các hàng "mới" được bán ra.
 
@@ -1458,7 +1458,7 @@ Tương tự ở hai khối tiếp theo nơi mà một cột bị khuyết ở k
 
 2. Tương tự áp dụng ROLLUP vào `DNsales` giống hệt ở trên chỉ thay chữ CUBE thành ROLLUP:
 
-![apply_rollup_dnsales](apply_rollup_dnsales.png)
+![apply_rollup_dnsales](image/apply_rollup_dnsales.png)
 
 Kết quả gần như tương tự chỉ thiếu đi 5 hàng mà chỉ có cột `salespersonname`. Vậy ta có thể thấy CUBE sẽ tạo ra tất cả các hoán vị mà có thể `GROUP BY`, còn ROLLUP chỉ tạo ra hoán vị duy nhất được xác định theo thứ tự được liệt kê trong lệnh gọi ROLLUP (ở đây là `autoclassname, salespersonname`) 
 
