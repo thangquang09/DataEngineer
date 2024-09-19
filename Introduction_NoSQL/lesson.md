@@ -12,6 +12,13 @@
   - [2.5. Flexibility in Data Modeling](#25-flexibility-in-data-modeling)
   - [2.6. Benefit of Using NoSQL Databases](#26-benefit-of-using-nosql-databases)
   - [2.7. Summary](#27-summary)
+  - [2.8. NoSQL Database Types and Use Cases](#28-nosql-database-types-and-use-cases)
+    - [2.8.1. Document store databases](#281-document-store-databases)
+    - [2.8.2. Key-value stores](#282-key-value-stores)
+    - [2.8.3. Column-family stores](#283-column-family-stores)
+    - [2.8.4. Graph Databases](#284-graph-databases)
+    - [2.8.5. Wide-column stores](#285-wide-column-stores)
+    - [2.8.6. Expanded use case example: Using MongoDB for a content management system (CMS)](#286-expanded-use-case-example-using-mongodb-for-a-content-management-system-cms)
 
 
 # 1. Overview of NoSQL
@@ -133,3 +140,184 @@ Ví dụ: Một công ty truyền thông xã hội như Facebook có thể sử 
 - Lợi ích chính của NoSQL bao gồm mở rộng ngang, hiệu suất cao, chi phí thấp, lược đồ linh hoạt, và cấu trúc dữ liệu đa dạng.
 
 NoSQL đã mang đến những giải pháp hiệu quả cho những thách thức về hiệu suất, tính sẵn sàng và chi phí mà các hệ thống truyền thống không thể đáp ứng tốt. Tuy nhiên, vẫn có những trường hợp mà cơ sở dữ liệu quan hệ (RDBMS) có thể là lựa chọn tốt hơn, tùy thuộc vào yêu cầu cụ thể của hệ thống.
+
+## 2.8. NoSQL Database Types and Use Cases
+
+### 2.8.1. Document store databases
+
+Document-store databases, còn được gọi là `document-orented databases`, lưu trữ dữ liệu ở định dạng tài liệu, `thường là JSON hoặc BSON (JSON nhị phân)` trong đó mỗi tài liệu chứa các cặp khóa-giá trị hoặc cặp khóa-tài liệu. Các cơ sở dữ liệu này `không có lược đồ`, cho phép linh hoạt trong cấu trúc dữ liệu trong bộ sưu tập.
+
+**CÁC ĐẶC TRƯNG**
+
+- Cung cấp tính linh hoạt của lược đồ: Tài liệu trong các bộ sưu tập có thể có các cấu trúc khác nhau, cho phép dễ dàng cập nhật và điều chỉnh các yêu cầu dữ liệu ngày càng phát triển.
+- Thực hiện các hoạt động tạo, đọc, cập nhật và xóa (CRUD) hiệu quả: rất phù hợp cho các ứng dụng đọc và ghi chuyên sâu nhờ khả năng truy xuất toàn bộ tài liệu.
+- Cung cấp khả năng mở rộng: khả năng mở rộng theo chiều ngang bằng cách phân chia dữ liệu trên các cụm.
+
+**TRƯỜNG HỢP SỬ DỤNG**
+
+- Hệ thống quản lý nội dung (CMS): Nền tảng CMS như WordPress sử dụng cơ sở dữ liệu lưu trữ tài liệu để lưu trữ nhanh và truy cập vào các loại nội dung như bài viết, hình ảnh và dữ liệu người dùng. (MongoDB)
+- Thương mại điện tử: Nền tảng thương mại điện tử cần quản lý hiệu quả danh mục sản phẩm với các thuộc tính và thứ bậc đa dạng, phù hợp với tính chất năng động của danh sách sản phẩm thương mại điện tử. (Couchbase hoặc Amazon DocumentDB, sử dụng khả năng tương thích MongoDB)
+
+**CÁC NHÀ CUNG CẤP ĐƯỢC ĐỀ CẬP THƯỜNG XUYÊN**
+
+- MongoDB
+- Couchbase
+- Amazon DocumentDB
+
+### 2.8.2. Key-value stores
+
+Key-value stores là CSDL NoSQL đơn giản nhất, lưu trữ dữ liệu dưới dạng tập hợp khóa-giá trị, trong đó khóa là duy nhất và trỏ trực tiếp đến giá trị liên quan của nó.
+
+**CÁC ĐẶC TRƯNG**
+
+- Mang lại hiệu suất cao: hiệu quả cho các thao tác đọc và ghi, được tối ưu hóa để truy xuất nhanh chóng dựa trên các keys.
+- Cung cấp khả năng mở rộng: dễ dàng mở rộng do cấu trúc đơn giản và khả năng phân phối dữ liệu trên các nút (nodes)
+- Sử dụng bộ nhớ đệm để truy cập nhanh
+- Cung cấp chức năng quản lý phiên
+- Làm việc với hệ thống phân tán
+
+**TRƯỜNG HỢP SỬ DỤNG**
+
+- Nâng cao hiệu suất web bằng cách lưu vào bộ nhớ đệm dữ liệu được truy cập thường xuyên (Sử dụng Redis hoặc Memcached)
+- E-commerce platforms, software applications, including gaming: Amazon DynamoDB provides a highly scalable key-value store, facilitating distributed systems' seamless operation by handling high traffic and scaling dynamically.
+
+**CÁC NHÀ CUNG CẤP ĐƯỢC ĐỀ CẬP THƯỜNG XUYÊN**
+
+- Redis
+- Memcached
+- Amazon DynamoDB
+
+### 2.8.3. Column-family stores
+
+Column-family stores NoSQL Databases, còn được gọi là CSDL cột, sắp xếp dữ liệu theo cột thay vì hàng. Các cơ sở dữ liệu này lưu trữ các cột dữ liệu cùng nhau, giúp chúng xử lý các tập dữ liệu lớn bằng lược đồ động một cách hiệu quả.
+
+**CÁC ĐẶC TRƯNG**
+
+- Sử dụng lưu trữ theo hướng cột: Dữ liệu được nhóm theo cột thay vì hàng, cho phép truy xuất hiệu quả các cột cụ thể.
+- Cung cấp khả năng mở rộng: Kiến trúc phân tán mang lại tính sẵn sàng và khả năng mở rộng cao.
+
+**TRƯỜNG HỢP SỬ DỤNG**
+
+- Các ứng dụng IoT quản lý lượng lớn dữ liệu cảm biến một cách hiệu quả nhờ khả năng xử lý dữ liệu được đánh dấu thời gian trên quy mô lớn, được gọi là phân tích dữ liệu chuỗi thời gian. (Apache Cassandra)
+- Các ứng dụng lưu trữ và phân tích sở thích và hành vi của người dùng thường mang lại khả năng cá nhân hóa. (HBase, một phần của hệ sinh thái Hadoop)
+- Phân tích dữ liệu quy mô lớn.
+
+**CÁC NHÀ CUNG CẤP ĐƯỢC ĐỀ CẬP THƯỜNG XUYÊN**
+
+- Apache Cassandra
+- Hbase
+
+### 2.8.4. Graph Databases
+
+Cơ sở dữ liệu Graph NoSQL được thiết kế để quản lý dữ liệu có tính liên kết cao, thể hiện các mối quan hệ với tư cách là công dân hạng nhất cùng với các nút và thuộc tính.
+
+**CÁC ĐẶC TRƯNG**
+
+- Phân tích dữ liệu bằng mô hình dữ liệu biểu đồ: các mối quan hệ cũng quan trọng như chính dữ liệu, cho phép truyền tải và truy vấn hiệu quả các mối quan hệ phức tạp.
+- Hiệu suất nhanh cho truy vấn mối quan hệ: được tối ưu hóa cho các truy vấn liên quan đến mối quan hệ, khiến chúng trở nên lý tưởng cho mạng xã hội, hệ thống đề xuất và phân tích mạng.
+
+**TRƯỜNG HỢP SỬ DỤNG**
+
+- Mạng xã hội yêu cầu quản lý dữ liệu hiệu quả về mối quan hệ giữa người dùng, bài đăng, nhận xét và lượt thích. (Neo4j)
+- Hệ thống đề xuất: Các tổ chức cần một cấu trúc cơ sở dữ liệu có thể tạo ra các công cụ đề xuất phức tạp, phân tích các mối quan hệ phức tạp giữa người dùng, sản phẩm và hành vi để đưa ra các đề xuất chính xác. (Amazon Neptune)
+
+**CÁC NHÀ CUNG CẤP ĐƯỢC ĐỀ CẬP THƯỜNG XUYÊN**
+- Neo4j
+- Amazon Neptune
+- ArangoDB Memcached
+
+### 2.8.5. Wide-column stores
+
+Wide-column store NoSQL databases sắp xếp dữ liệu theo bảng, hàng và cột, `giống như cơ sở dữ liệu quan hệ` nhưng có `lược đồ linh hoạt`.
+
+**CÁC ĐẶC TRƯNG**
+
+- Sử dụng lưu trữ theo cột: Dữ liệu được lưu trữ trong các cột, cho phép truy xuất hiệu quả các cột cụ thể thay vì toàn bộ hàng.
+- Cung cấp khả năng mở rộng theo chiều ngang và khả năng chịu lỗi.
+
+**TRƯỜNG HỢP SỬ DỤNG**
+
+- Phân tích dữ liệu lớn: Xử lý hiệu quả việc xử lý dữ liệu quy mô lớn để phân tích dữ liệu lớn theo thời gian thực. (Apache HBase được sử dụng cùng với Hadoop)
+- Quản lý nội dung doanh nghiệp: Cơ sở dữ liệu của các tổ chức lớn cần quản lý lượng lớn dữ liệu có cấu trúc như hồ sơ nhân viên hoặc hàng tồn kho đến hạn. (Cassandra)
+
+**CÁC NHÀ CUNG CẤP ĐƯỢC ĐỀ CẬP THƯỜNG XUYÊN**
+- Apache HBase
+- Apache Cassandra
+
+### 2.8.6. Expanded use case example: Using MongoDB for a content management system (CMS)
+
+Hệ thống quản lý nội dung (CMS) thu thập, quản lý, quản lý và làm phong phú nội dung doanh nghiệp một cách thông minh, bao gồm các trang HTML, hình ảnh, bài viết, v.v. Hệ thống quản lý nội dung giúp các công ty triển khai nội dung của họ một cách hiệu quả và an toàn trên mọi đám mây và trong mọi ứng dụng.
+
+Quản lý nội dung tốt có nghĩa là các thành viên trong nhóm có thể nhanh chóng thêm, cập nhật và xóa nội dung khỏi cơ sở dữ liệu cũng như các trang liên quan có nội dung đó. Các ví dụ bao gồm đưa ra tin nóng, cập nhật tin tức hiện tại, bao gồm dự báo thời tiết, quảng cáo nội dung, cập nhật chính sách tuyển sinh đại học, ra mắt các dịch vụ mới của thành phố, v.v.
+
+Ví dụ: sử dụng MongoDB làm cơ sở dữ liệu phụ trợ cho hệ thống quản lý nội dung (CMS) là một lựa chọn thiết thực khi bạn cần quản lý và phục vụ nhiều loại nội dung khác nhau, đặc biệt là trong các tình huống mà bạn mong đợi các thay đổi lược đồ thường xuyên hoặc yêu cầu mở rộng quy mô.
+
+Tiếp theo, hãy xem một số khía cạnh của việc quản lý nội dung bằng hệ thống quản lý nội dung, cụ thể là sử dụng MongoDB.
+
+**Cấu trúc nội dung sử dụng MongoDB**
+
+Trong MongoDB, bạn thể hiện nội dung dưới dạng tài liệu. Mỗi tài liệu tương ứng với một phần nội dung, chẳng hạn như bài viết, hình ảnh, video hoặc trang. Bạn có thể sử dụng các tài liệu phụ trong tài liệu để sắp xếp cấu trúc và phân cấp nội dung.
+
+**Ví dụ về cấu trúc: Lưu trữ một bài viết blog**
+
+Khi lưu trữ một bài đăng trên blog, bạn sẽ lưu trữ các thuộc tính cốt lõi như tiêu đề, nội dung, được tạo tại và URL hình ảnh. Sau đó, bằng cách sử dụng trường mảng, bạn có thể lưu trữ các thẻ. Các nhận xét về bài đăng đó được lưu trữ dưới dạng một mảng các đối tượng.
+
+```python
+// Collection: posts
+{
+"\_id":1,
+"title":"Sample Blog Post",
+"content":"This is the content of the blog post...",
+"author":{
+"name":"John Doe",
+"email":"john@example.com",
+"bio":"A passionate blogger.",
+"created\_at":"2023-09-20T00:00:00Z"
+},
+"created\_at":"2023-09-20T08:00:00Z",
+"tags":["mongodb","blogging","example"],
+"comments":[
+{
+"text":"Great post!",
+"author":"Emily Johnson",
+"created\_at":"2023-09-20T10:00:00Z"
+},
+{
+"text":"Thanks for sharing!",
+"author":"James Martin",
+"created\_at":"2023-09-20T11:00:00Z"
+}
+]
+}
+```
+
+**META DATA AND INDEXING USING MongoDB**
+
+Bạn có thể sử dụng khả năng lập chỉ mục của MongoDB để tối ưu hóa việc truy xuất nội dung. Bạn có thể tạo chỉ mục trên các trường thường được sử dụng để lọc hoặc tìm kiếm, chẳng hạn như từ khóa, ngày xuất bản hoặc loại nội dung hoặc sử dụng hỗ trợ chỉ mục văn bản của MongoDB cho truy vấn tìm kiếm văn bản trên các trường chứa nội dung chuỗi. Chỉ mục văn bản cải thiện hiệu suất khi tìm kiếm các từ hoặc cụm từ cụ thể trong nội dung chuỗi.
+
+Ví dụ: bạn muốn cung cấp khả năng tìm kiếm trên nội dung blog của mình. Đầu tiên bạn sẽ tạo một chỉ mục văn bản:
+
+```
+db.articles.createIndex({subject: "text"})
+```
+
+Và sau đó bạn có thể cung cấp một truy vấn như:
+
+```
+db.posts.find({$text: {$search: "digital life"}})
+```
+
+nơi MongoDB sẽ tìm kiếm các phiên bản gốc của những từ này: `digital` hoặc `life`.
+
+**MỞ RỘNG QUY MÔ CMS BẰNG MongoDB**
+
+Khi CMS của bạn phát triển, MongoDB có thể giúp bạn mở rộng quy mô. Bạn có thể sử dụng phân đoạn để chia tỷ lệ theo chiều ngang hoặc sử dụng phân đoạn theo vùng để phân phối toàn cầu.
+
+**Sử dụng sharding để chia tỷ lệ theo chiều ngang (tăng dung lượng)**
+
+Hãy xem xét một công ty hiện có `100 triệu khách hàng`. Công ty này dự kiến ​​sẽ `mở rộng cơ sở khách hàng của mình lên 200 triệu khách hàng`. Số lượng khách hàng tăng lên đồng nghĩa với việc công ty sẽ `cần tăng gấp đôi phần cứng lưu trữ dữ liệu CNTT`. Công ty `có thể mở rộng quy mô theo chiều dọc`, điều này có thể khiến `chi phí tăng lên theo cấp số nhân vì chi phí phần cứng không tỷ lệ tuyến tính với hiệu suất`. Sơ đồ sau đây cho thấy công ty có thể mở rộng quy mô theo chiều ngang và sử dụng sharding để quản lý cơ sở dữ liệu.
+
+![diagrame show horizontal scale](horizontal_scale.png)
+
+Tuy nhiên, việc sử dụng sharding để mở rộng quy mô theo chiều ngang mang lại cho công ty thông lượng gấp đôi với chi phí gấp đôi.
+
