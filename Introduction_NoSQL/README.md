@@ -82,6 +82,7 @@
     - [8.2.2. Querying book data using a NoSQL document database](#822-querying-book-data-using-a-nosql-document-database)
     - [8.2.3 Important! What about data duplication?](#823-important-what-about-data-duplication)
   - [8.3. Schema Evolution Considerations](#83-schema-evolution-considerations)
+- [9. Read more](#9-read-more)
 
 
 # 1. Overview of NoSQL
@@ -831,6 +832,8 @@ Tuy nhiên, các cơ sở dữ liệu quan hệ truyền thống gặp khó khă
 
 ## 6.2. What is CAP Theorem?
 
+![CAP Theorem](captheorem.png)
+
 Định lý CAP nêu rõ rằng trong một hệ thống phân tán, có ba đặc tính cần thiết để thiết kế và triển khai thành công các ứng dụng, bao gồm:
 
 - C: Tính nhất quán (Consistency)
@@ -869,6 +872,8 @@ Giả sử bạn có một hệ thống với 8 nút phân tán trên toàn cầ
 
 ## 6.4. Classification of NoSQL systems according to the CAP Theorem
 
+![db_classification_accroding_to_cap](db_classification_accroding_to_cap.png)
+
 Dựa trên Định lý CAP, ta có thể phân loại các hệ thống cơ sở dữ liệu NoSQL thành hai nhóm chính:
 
 - **CP (Consistent and Partition Tolerant)**: Hệ thống ưu tiên tính nhất quán và khả năng chịu lỗi phân vùng. Tuy nhiên, điều này có thể làm giảm tính sẵn sàng.
@@ -895,6 +900,8 @@ Một số người nghĩ rằng NoSQL là sự thay thế cho RDBMS hoặc rằ
 - Ví dụ: Một hệ thống bán lẻ lớn có thể cần tính nhất quán và giao dịch phức tạp để xử lý các đơn đặt hàng, nhưng cũng cần một hệ thống NoSQL để xử lý khối lượng lớn dữ liệu không có cấu trúc như phản hồi khách hàng hoặc phân tích dữ liệu người dùng.
 
 ## 7.2. When to choose RDBMS and when to choose NoSQL?
+
+![rdbms_and_nosql](rdbms_and_nosql.png)
 
 **a. RDBMS:**
 
@@ -1136,4 +1143,10 @@ Trong cơ sở dữ liệu tài liệu như MongoDB, lược đồ thường lin
 ```noSQL
 Db.books.update ({ _id: 1 },{$set: {Newfield: “Some value”}});
 ```
+
+# 9. Read more
+
+[Vector Databases](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTVNraWxsc05ldHdvcmstQ1MwMTAxRU4tQ291cnNlcmEvbGFicy9yZWFkaW5nL3YzL20xL3ZlY3Rvcl9kYXRhYmFzZXMubWQiLCJ0b29sX3R5cGUiOiJpbnN0cnVjdGlvbmFsLWxhYiIsImFkbWluIjpmYWxzZSwiaWF0IjoxNzExNDI0ODczfQ.rCvraOeyTqLCciUr7x7KnweEvfgK92dvAfZER-RMouA)
+
+[Glossary: Working with Distributed Data](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTVNraWxsc05ldHdvcmstQ1MwMTAxRU4tQ291cnNlcmEvbGFicy9HbG9zc2FyeSUzQV9Xb3JraW5nX3dpdGhfRGlzdHJpYnV0ZWRfREF0YS5tZCIsInRvb2xfdHlwZSI6Imluc3RydWN0aW9uYWwtbGFiIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3MTE0MjQ4NDJ9.vtgi8D_0OR1M4NDYllDeS7ImH3j28L6_8bGI9mzEsWw)
 
