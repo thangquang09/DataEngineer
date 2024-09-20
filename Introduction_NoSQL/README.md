@@ -1132,3 +1132,8 @@ ALTER TABLE table_nameADD column_name data_type;
 Sau khi thực hiện thay đổi lược đồ, bạn có thể cần phải di chuyển dữ liệu hiện có để khớp với lược đồ mới, điều này có thể liên quan đến các tập lệnh di chuyển và chuyển đổi dữ liệu.
 
 Trong cơ sở dữ liệu tài liệu như MongoDB, lược đồ thường linh hoạt hơn và bạn thường có thể thêm hoặc xóa các trường khỏi tài liệu (tài liệu riêng lẻ, vì thường không có lược đồ được thực thi trên toàn bộ sưu tập) mà không cần cấu trúc được xác định trước. Đây là một ví dụ:
+
+```noSQL
+Db.books.update ({ _id: 1 },{$set: {Newfield: “Some value”}});
+```
+
