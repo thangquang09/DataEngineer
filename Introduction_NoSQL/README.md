@@ -19,6 +19,9 @@
     - [2.8.4. Graph Databases](#284-graph-databases)
     - [2.8.5. Wide-column stores](#285-wide-column-stores)
     - [2.8.6. Expanded use case example: Using MongoDB for a content management system (CMS)](#286-expanded-use-case-example-using-mongodb-for-a-content-management-system-cms)
+  - [2.9. Key-Value NoSQL Databases](#29-key-value-nosql-databases)
+    - [2.9.1. Architecture](#291-architecture)
+    - [2.9.2. Practical Use Cases](#292-practical-use-cases)
 
 
 # 1. Overview of NoSQL
@@ -320,4 +323,22 @@ Hãy xem xét một công ty hiện có `100 triệu khách hàng`. Công ty nà
 ![diagrame show horizontal scale](horizontal_scale.png)
 
 Tuy nhiên, việc sử dụng sharding để mở rộng quy mô theo chiều ngang mang lại cho công ty thông lượng gấp đôi với chi phí gấp đôi.
+
+## 2.9. Key-Value NoSQL Databases
+
+### 2.9.1. Architecture
+
+Trong cơ sở dữ liệu dạng Key-Value, tất cả dữ liệu được lưu trữ dưới dạng cặp khóa (key) và giá trị (value) tương ứng. Về mặt kiến trúc, đây là loại cơ sở dữ liệu đơn giản nhất trong các hệ thống NoSQL.
+
+- Dữ liệu được lưu trữ dưới dạng bảng băm (hash map). Điều này giúp cho các thao tác cơ bản như tạo, đọc, cập nhật, và xóa (CRUD) trở nên cực kỳ nhanh chóng.
+- Khả năng phân mảnh (sharding) dữ liệu cũng rất dễ thực hiện trong cơ sở dữ liệu Key-Value. Mỗi phần dữ liệu sẽ chứa một dải khóa và các giá trị tương ứng, từ đó giúp cơ sở dữ liệu mở rộng theo chiều ngang tốt hơn.
+
+Tuy nhiên, một điểm hạn chế của loại cơ sở dữ liệu này là nó không phù hợp cho các truy vấn phức tạp liên quan đến nhiều mối quan hệ giữa các phần dữ liệu. Hệ thống Key-Value thường chỉ hỗ trợ các thao tác atomic trên các thao tác với một khóa duy nhất.
+
+### 2.9.2. Practical Use Cases
+
+Key-Value databases thường được sử dụng khi cần:
+
+- Hiệu suất cao cho các thao tác CRUD cơ bản.
+- Dữ liệu không có mối liên hệ phức tạp giữa các phần tử.
 
