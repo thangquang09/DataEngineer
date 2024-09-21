@@ -83,6 +83,7 @@
     - [8.2.3 Important! What about data duplication?](#823-important-what-about-data-duplication)
   - [8.3. Schema Evolution Considerations](#83-schema-evolution-considerations)
 - [9. Read more](#9-read-more)
+- [10. MongoDB](#10-mongodb)
 
 
 # 1. Overview of NoSQL
@@ -1037,13 +1038,13 @@ Ngược lại, cơ sở dữ liệu tài liệu được đơn giản hóa và 
 
 ```json
 {
-  “_id”: 1,
-  ”title”: “The Great Gatsby”,
-  ”author”: “F. Scott Fitzgerald”,
-  ”isbn”: “978-0743273565”,
-  ”published_year”: 1925,
-  ”genres”: [“Fiction”, “Classic”]
-  }
+  "_id": 1,
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "isbn": "978-0743273565",
+  "published_year": 1925,
+  "genres": ["Fiction", "Classic"]
+}
 ```
 
 Tiếp theo, so sánh mức độ phức tạp của việc truy vấn dữ liệu trong cơ sở dữ liệu quan hệ và tài liệu.
@@ -1096,13 +1097,13 @@ Bạn đã biết đầu ra mình cần và đầu ra đó là tiêu chí hàng 
 
 ```json
 {
-  “_id”: 1,
-  ”title”: “The Great Gatsby”,
-  ”author”: “F. Scott Fitzgerald”,
-  ”isbn”: “978-0743273565”,
-  ”published_year”: 1925,
-  ”genres”: [“Fiction”, “Classic”]
-  }
+  "_id": 1,
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "isbn": "978-0743273565",
+  "published_year": 1925,
+  "genres": ["Fiction", "Classic"]
+}
 ```
 
 Ví dụ: khi tạo truy vấn cơ sở dữ liệu tài liệu, sử dụng MongoDB, bạn chỉ định dấu ngoặc trống làm đối số đầu tiên biểu thị bạn muốn xem tất cả tài liệu. Đối số thứ hai, được gọi là phép chiếu, cho phép bạn chọn trường nào sẽ hiển thị thông tin khách hàng. Không phải lúc nào bạn cũng cần hiển thị tất cả các trường. Và bạn sẽ nhận thấy sự đơn giản của truy vấn này vì nó không cần bất kỳ sự kết hợp nào với các bộ sưu tập khác.
@@ -1149,4 +1150,8 @@ Db.books.update ({ _id: 1 },{$set: {Newfield: “Some value”}});
 [Vector Databases](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTVNraWxsc05ldHdvcmstQ1MwMTAxRU4tQ291cnNlcmEvbGFicy9yZWFkaW5nL3YzL20xL3ZlY3Rvcl9kYXRhYmFzZXMubWQiLCJ0b29sX3R5cGUiOiJpbnN0cnVjdGlvbmFsLWxhYiIsImFkbWluIjpmYWxzZSwiaWF0IjoxNzExNDI0ODczfQ.rCvraOeyTqLCciUr7x7KnweEvfgK92dvAfZER-RMouA)
 
 [Glossary: Working with Distributed Data](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTVNraWxsc05ldHdvcmstQ1MwMTAxRU4tQ291cnNlcmEvbGFicy9HbG9zc2FyeSUzQV9Xb3JraW5nX3dpdGhfRGlzdHJpYnV0ZWRfREF0YS5tZCIsInRvb2xfdHlwZSI6Imluc3RydWN0aW9uYWwtbGFiIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3MTE0MjQ4NDJ9.vtgi8D_0OR1M4NDYllDeS7ImH3j28L6_8bGI9mzEsWw)
+
+# 10. MongoDB
+
+[Xem tại folder mongoDB](mongoDB/)
 
