@@ -35,6 +35,7 @@
   - [7.5. How Replication and Sharding work?](#75-how-replication-and-sharding-work)
   - [7.6. Summary](#76-summary)
 - [8. Access MongoDB with Python](#8-access-mongodb-with-python)
+- [9. Module Cheatsheet](#9-module-cheatsheet)
 
 
 # 1. Overview of MongoDB
@@ -702,4 +703,8 @@ Replication và Sharding là hai công cụ quan trọng trong MongoDB, giúp b�
 [Tutorial Script](access_mongodb_tutorial.py)
 
 [Hans-on Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvTW9uZ29EQi9MYWIlMjAtJTIwQWNjZXNzaW5nJTIwTW9uZ29EQiUyMHVzaW5nJTIwUHl0aG9uLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTgwOX0.RVsEeRawOv6oZkFJqkTLFQDe4aTWEGyUrcRO2h629lA)
+
+# 9. Module Cheatsheet
+
+[Cheatsheet](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMSkillsNetwork-CS0101EN-Coursera/labs/MongoDB__Cheatsheet.md.html?origin=www.coursera.org)
 
