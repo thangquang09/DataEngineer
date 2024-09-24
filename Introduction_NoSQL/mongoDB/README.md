@@ -1,3 +1,42 @@
+- [1. Overview of MongoDB](#1-overview-of-mongodb)
+  - [1.1. What is MongoDB?](#11-what-is-mongodb)
+- [1.2. Architecture of Document in MongoDB](#12-architecture-of-document-in-mongodb)
+  - [1.3. Features](#13-features)
+  - [1.4. Summary](#14-summary)
+- [2. Benefit of MongoDB](#2-benefit-of-mongodb)
+- [3. MongoDB Use Cases](#3-mongodb-use-cases)
+- [4. Hands-on: Getting Started with MongoDB](#4-hands-on-getting-started-with-mongodb)
+- [4. CRUD Operations](#4-crud-operations)
+  - [4.1. Connect to MongoDB](#41-connect-to-mongodb)
+  - [4.2. CRUD Operations](#42-crud-operations)
+    - [4.2.1. CREATE](#421-create)
+    - [4.2.2. READ](#422-read)
+    - [4.2.3. UPDATE](#423-update)
+    - [4.2.4. DELETE](#424-delete)
+  - [4.3. Hands-on](#43-hands-on)
+- [5. Indexes](#5-indexes)
+  - [5.1. Why we need Indexes?](#51-why-we-need-indexes)
+  - [5.2. Indexes in MongoDb](#52-indexes-in-mongodb)
+  - [5.3. Compound Index](#53-compound-index)
+  - [5.4. How MongoDB store indexes?](#54-how-mongodb-store-indexes)
+  - [5.5. Hands-on lab](#55-hands-on-lab)
+- [6. Aggregation Framework](#6-aggregation-framework)
+  - [6.1. What is Aggregation Framework?](#61-what-is-aggregation-framework)
+  - [6.2. Stages in Aggregation Framework](#62-stages-in-aggregation-framework)
+  - [6.3. Other common stages in Aggregation Pipeline](#63-other-common-stages-in-aggregation-pipeline)
+  - [6.4. When we use Aggregation Framework?](#64-when-we-use-aggregation-framework)
+  - [6.5. Summary](#65-summary)
+  - [6.6. Hands-on Lab](#66-hands-on-lab)
+- [7. Replication and Sharding in MongoDB](#7-replication-and-sharding-in-mongodb)
+  - [7.1. What is Replication?](#71-what-is-replication)
+  - [7.2. Benefit of Replication](#72-benefit-of-replication)
+  - [7.3. Relication Process in MongoDB](#73-relication-process-in-mongodb)
+  - [7.4. What is Sharding?](#74-what-is-sharding)
+  - [7.5. How Replication and Sharding work?](#75-how-replication-and-sharding-work)
+  - [7.6. Summary](#76-summary)
+- [8. Access MongoDB with Python](#8-access-mongodb-with-python)
+
+
 # 1. Overview of MongoDB
 
 ## 1.1. What is MongoDB?
@@ -237,6 +276,13 @@ MongoDB cung cấp khả năng mở rộng tuyệt vời và cho phép phân tí
 
 [Lab instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvTW9uZ29EQi9MYWIlMjAtJTIwTW9uZ29EQiUyMEdldHRpbmclMjBTdGFydGVkLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNTI3MTgxNX0.NIyCPFUmOS4OXVJRby_RwAEy7Psq_0BMKTOIp9DSJgE)
 
+Đăng nhập vào MongoDB: 
+
+```bash
+mongosh -u AdminCherry -p --authenticationDatabase admin
+```
+
+
 # 4. CRUD Operations
 
 Mongo shell là một công cụ dòng lệnh do MongoDB cung cấp, cho phép bạn tương tác với cơ sở dữ liệu của mình. Nó là một giao diện tương tác sử dụng JavaScript và bạn có thể dùng nó để thực hiện các thao tác dữ liệu cũng như quản lý cơ sở dữ liệu.
@@ -372,4 +418,288 @@ db.students.deleteOne({ email: "john@example.com" })
 ```javascript
 db.students.deleteMany({ last_name: "Doe" })
 ```
+
+## 4.3. Hands-on
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvTW9uZ29EQi9MYWIlMjAtJTIwTW9uZ29EQiUyMENSVUQubWQiLCJ0b29sX3R5cGUiOiJ0aGVpYWRvY2tlciIsImFkbWluIjpmYWxzZSwiaWF0IjoxNzI1Mjc0NDQ5fQ.Rp9N_8kqqqbyj7b5uc7lqOUAupV0UC9dPUvF-eNlGNM)
+
+# 5. Indexes
+
+## 5.1. Why we need Indexes?
+
+Indexes giúp ta tìm kiếm dữ liệu một cách nhanh chóng mà không cần phải duyệt qua toàn bộ cơ sở dữ liệu. Để hiểu rõ hơn, hãy tưởng tượng bạn đang ở thư viện Anh Quốc (British Library) với 25 triệu quyển sách. Bạn muốn tìm quyển "Designing Data-Intensive Applications" của Martin Kleppmann.
+
+- Nếu không có indexes, bạn phải tìm kiếm quyển sách này trong tất cả các kệ sách, một việc rất tốn thời gian.
+- Nhưng với indexes, bạn có thể dễ dàng vào đúng khu vực về máy tính, rồi đến ngăn sách về cơ sở dữ liệu, và cuối cùng tìm trên kệ "M" để tìm sách của Martin Kleppmann.
+
+Indexes tương tự như những công cụ giúp chúng ta tìm kiếm thông tin hàng ngày, như:
+
+- Danh bạ điện thoại (trước đây): Tên của mọi người được sắp xếp theo họ và tên. Nếu muốn tìm ai đó tên John Doe, bạn chỉ cần tra mục "D" rồi tiếp tục tìm "John".
+- Từ điển: Các từ được sắp xếp theo thứ tự chữ cái.
+- Mục lục ở cuối sách: Cho phép bạn nhanh chóng tìm nội dung cần thiết trong sách.
+
+## 5.2. Indexes in MongoDb
+
+Trong các hệ thống cơ sở dữ liệu, indexes nên được tạo cho những truy vấn phổ biến nhất để tối ưu hiệu suất. Chúng ta sẽ tìm hiểu ví dụ từ cơ sở dữ liệu quản lý khuôn viên (C`ampus Management Database`).
+
+**Ví dụ về Index**
+
+Giả sử chúng ta có collection về đăng ký khóa học (`course enrollment collection`) và thường xuyên tìm kiếm các sinh viên theo `courseId` (mã khóa học). Thay vì quét toàn bộ collection, chúng ta có thể tạo một chỉ mục (index) trên trường `courseId` để tối ưu hóa quá trình tìm kiếm.
+
+- Tạo chỉ mục: Chúng ta có thể tạo chỉ mục theo thứ tự tăng dần như sau:
+  ```javascript
+  db.course_enrollment.createIndex({ courseId: 1 })
+  ```
+
+  - Ý nghĩa: courseId : 1 có nghĩa là chúng ta lưu chỉ mục theo thứ tự tăng dần.
+
+Chỉ mục này sẽ giúp ta tìm các tài liệu có `courseId` cụ thể nhanh hơn mà không phải duyệt toàn bộ collection. Tuy nhiên, nếu ta muốn sắp xếp các sinh viên theo `studentId` (mã sinh viên) trong quá trình tìm kiếm, MongoDB sẽ phải thực hiện sắp xếp trong bộ nhớ (in-memory sort), điều này sẽ không hiệu quả.
+
+## 5.3. Compound Index
+
+Trong trường hợp này, chúng ta có thể sử dụng `compound index` - tức là chỉ mục trên nhiều hơn một trường.
+
+- Ví dụ: Để tìm các sinh viên có `courseId` là `1547` và đồng thời sắp xếp họ theo `studentId` theo thứ tự tăng dần, chúng ta có thể tạo compound index như sau:
+  ```javascript
+   db.course_enrollment.createIndex({ courseId: 1, studentId: 1 })
+  ```
+  - Ý nghĩa: Khi MongoDB tạo chỉ mục, các tài liệu sẽ được sắp xếp trước theo courseId, sau đó, với những tài liệu có cùng courseId, chúng sẽ được sắp xếp tiếp theo theo studentId.
+
+  - Lợi ích: Điều này giúp cho quá trình tìm kiếm và sắp xếp các tài liệu trở nên hiệu quả hơn vì các tài liệu đã được tổ chức sẵn trong chỉ mục.
+
+## 5.4. How MongoDB store indexes?
+
+Indexes trong MongoDB là các `cấu trúc dữ liệu đặc biệt`, chúng lưu trữ các trường mà bạn chỉ mục và vị trí của tài liệu đó trên đĩa.
+
+- MongoDB lưu trữ các chỉ mục theo cấu trúc `cây cân bằng` (balanced tree). Điều này giúp quá trình tìm kiếm tài liệu trở nên hiệu quả hơn, dù đó là tìm kiếm theo điều kiện bằng (`equality search`) hay theo khoảng (`range search`).
+
+- Ví dụ minh họa về cấu trúc cây: Trong ví dụ với courseId, mỗi nút trên cây đại diện cho một courseId, và dưới mỗi nút đó, các sinh viên được sắp xếp theo thứ tự tăng dần của studentId.
+
+## 5.5. Hands-on lab
+
+[Lab Instruction](https://cf-courses-data.static.labs.skills.network/IBM-DB0151EN-SkillsNetwork/labs/MongoDB/Lab%20-%20MongoDB%20Indexing.md.html)
+
+# 6. Aggregation Framework
+
+## 6.1. What is Aggregation Framework?
+
+`Aggregation Framework`, hay còn được gọi là `Aggregation Pipeline`, là một chuỗi các phép toán bạn áp dụng lên dữ liệu để đạt được kết quả mong muốn. Đây là cách mà MongoDB cho phép bạn thực hiện các phân tích dữ liệu phức tạp dựa trên một loạt các giai đoạn, mỗi giai đoạn sẽ xử lý dữ liệu theo một cách nhất định.
+
+**Ví dụ minh họa**
+
+Giả sử bạn muốn hiểu rõ về sự tiến bộ của sinh viên thông qua việc `tính điểm trung bình của sinh viên` trong năm 2020, được sắp xếp theo `courseId` (mã khóa học). Để có được thông tin này, bạn sẽ cần thực hiện các bước sau:
+
+1. Lọc các tài liệu thuộc năm 2020.
+2. Nhóm các tài liệu này theo courseId.
+3. Tính điểm trung bình cho mỗi nhóm.
+
+Để minh họa rõ hơn, hãy xem xét một tập dữ liệu về `courseResults` (kết quả khóa học) với các trường `courseId`, `năm học` và `điểm số`.
+
+## 6.2. Stages in Aggregation Framework
+
+`Aggregation Framework` bao gồm nhiều giai đoạn (stages), mỗi giai đoạn thực hiện một thao tác cụ thể trên dữ liệu. Các giai đoạn thường gặp bao gồm:
+
+- **$match**: Dùng để lọc các tài liệu dựa trên một tiêu chí nhất định.
+- **$group**: Nhóm các tài liệu lại với nhau dựa trên một group key (khóa nhóm).
+- **$project**: Chọn lọc các trường cần hiển thị trong kết quả cuối cùng.
+- **$sort**: Sắp xếp dữ liệu theo thứ tự nhất định.
+- **$count**: Đếm số lượng tài liệu trong một giai đoạn.
+- **$merge**: Lưu kết quả vào một collection khác.
+
+**Ví dụ cụ thể**
+
+Giả sử bạn có tập dữ liệu như sau:
+
+```json
+[
+    { "courseId": 1, "year": 2020, "score": 85 },
+    { "courseId": 1, "year": 2020, "score": 90 },
+    { "courseId": 2, "year": 2020, "score": 78 },
+    { "courseId": 2, "year": 2020, "score": 82 }
+]
+```
+
+- **Bước 1: $match**
+  - Dùng $match để lọc các tài liệu có năm học 2020:
+    ```javascript
+    db.courseResults.aggregate([
+      { $match: { year: 2020 } }
+    ])
+    ```
+    Kết quả sẽ chỉ bao gồm các tài liệu thuộc năm 2020.
+- **Bước 2: $group**
+  - Sử dụng $group để nhóm các tài liệu theo courseId và tính điểm trung bình cho mỗi khóa học:
+    ```javascript
+    db.courseResults.aggregate([
+      { $match: { year: 2020 } },
+      { $group: { _id: "$courseId", averageScore: { $avg: "$score" } } }
+    ])
+    ```
+    Trong kết quả, mỗi tài liệu sẽ chứa một courseId và điểm trung bình cho khóa học đó. Chẳng hạn, bạn sẽ nhận được:
+    ```json
+    [
+        { "_id": 1, "averageScore": 87.5 },
+        { "_id": 2, "averageScore": 80 }
+    ]
+    ```
+
+## 6.3. Other common stages in Aggregation Pipeline
+
+**$project**
+
+- $project dùng để tái cấu trúc tài liệu bằng cách chọn những trường cần hiển thị hoặc loại bỏ những trường không cần thiết. Ví dụ, chỉ muốn hiển thị firstName và lastName của sinh viên:
+  ```javascript
+  db.students.aggregate([
+    { $project: { firstName: 1, lastName: 1 } }
+  ])
+  ```
+
+**$sort**
+
+- $sort dùng để sắp xếp tài liệu theo thứ tự tăng dần hoặc giảm dần dựa trên một trường nào đó. Ví dụ, sắp xếp sinh viên theo lastName theo thứ tự giảm dần:
+  ```javascript
+  db.students.aggregate([
+    { $sort: { lastName: -1 } }
+  ])
+  ```
+
+**$count**
+
+- $count dùng để đếm số lượng tài liệu trong giai đoạn đó và trả về tổng số sinh viên:
+  ```javascript
+  db.students.aggregate([
+    { $count: "totalStudents" }
+  ])
+  ```
+
+  Kết quả sẽ là:
+  ```json
+
+  { "totalStudents": 3 }
+  ```
+
+**$merge**
+
+- $merge dùng để lưu kết quả của quá trình tổng hợp vào một collection mới. Ví dụ, bạn muốn lưu kết quả trung bình điểm của sinh viên vào một collection mới tên là `averageScores`:
+
+  ```javascript
+  db.courseResults.aggregate([
+    { $match: { year: 2020 } },
+    { $group: { _id: "$courseId", averageScore: { $avg: "$score" } } },
+    { $merge: "averageScores" }
+  ])
+  ```
+  Kết quả sẽ không được hiển thị trực tiếp, nhưng MongoDB sẽ lưu trữ các tài liệu này trong collection `averageScores`.
+
+## 6.4. When we use Aggregation Framework?
+
+`Aggregation Framework` là công cụ rất mạnh mẽ cho việc phân tích dữ liệu phức tạp trong MongoDB. Các trường hợp sử dụng phổ biến bao gồm:
+
+- Theo dõi tiến trình học tập: Bạn có thể sử dụng aggregation để tính toán điểm trung bình của sinh viên theo từng khóa học và năm học.
+- Ứng dụng thương mại điện tử: Tính toán doanh thu trung bình của sản phẩm theo từng quốc gia.
+- Tính toán tổng hợp: Aggregation cho phép bạn thực hiện các phép tính từ đơn giản đến phức tạp, nhóm dữ liệu thành các nhóm có ý nghĩa để cung cấp những thông tin giá trị.
+
+## 6.5. Summary
+
+- Aggregation Framework là một chuỗi các phép toán được áp dụng lên dữ liệu để đạt được kết quả phân tích mong muốn.
+- Bạn có thể xây dựng quy trình tổng hợp dữ liệu bằng cách sử dụng các giai đoạn như $match, $group, $project, $sort, và $merge.
+- Aggregation Framework hữu ích trong các nhiệm vụ phân tích và báo cáo, giúp thực hiện những phép toán phức tạp trên dữ liệu lớn mà vẫn đảm bảo hiệu quả.
+
+## 6.6. Hands-on Lab
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvTW9uZ29EQi9MYWIlMjAtJTIwTW9uZ29EQiUyMEFnZ3JlZ2F0aW9uLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTgyM30.LrQ0xcd-TCrhRm2vz4NsYZ7qSrE941RtUzm35sqA32A)
+
+# 7. Replication and Sharding in MongoDB
+
+## 7.1. What is Replication?
+
+`Replication` (nhân bản) là việc tạo ra nhiều bản sao của dữ liệu trong một hệ thống cơ sở dữ liệu. Một Replica Set trong MongoDB bao gồm ít nhất ba `node` chứa dữ liệu giống nhau. Điều này có nghĩa là tất cả các `node` trong `Replica Set` đều có cùng một dữ liệu.
+
+**Cách hoạt động của Replication**
+
+Dữ liệu được ghi vào `primary node` (nút chính), sau đó nó sẽ được sao chép sang các `secondary node` (nút phụ). Quá trình này tạo ra `redundancy` (sự dư thừa), nghĩa là nếu một phần cứng gặp sự cố, bạn vẫn có nhiều bản sao của dữ liệu để duy trì tính khả dụng cao cho cơ sở dữ liệu của bạn.
+
+Ví dụ: Hãy tưởng tượng bạn có một cơ sở dữ liệu chứa thông tin sinh viên. Cơ sở dữ liệu này được triển khai trên ba node trong một Replica Set:
+
+- **Primary Node**: Nút này chịu trách nhiệm nhận và xử lý các yêu cầu ghi (insert, update, delete) từ ứng dụng.
+- **Secondary Node 1 và Secondary Node 2**: Hai nút này chỉ nhận các bản sao của dữ liệu từ Primary Node.
+
+Nếu Primary Node gặp sự cố, một trong các Secondary Node sẽ được bầu chọn làm Primary Node mới để tiếp tục nhận các yêu cầu ghi.
+
+## 7.2. Benefit of Replication
+
+- **Tăng cường tính khả dụng**: Replication giúp đảm bảo cơ sở dữ liệu vẫn hoạt động ngay cả khi một hoặc nhiều node gặp sự cố.
+- **Redundancy (dư thừa)**: Có nhiều bản sao của dữ liệu giúp ngăn ngừa mất dữ liệu trong trường hợp phần cứng gặp vấn đề.
+- **Bảo trì dễ dàng**: Có thể thực hiện bảo trì hoặc cập nhật phần mềm một cách tuần tự trên từng node mà không làm gián đoạn dịch vụ.
+
+**Hiểu lầm phổ biến về Replication**
+
+Nhiều người nghĩ rằng replication có thể cứu bạn khỏi các thảm họa như xóa nhầm cơ sở dữ liệu. Tuy nhiên, nếu bạn xóa dữ liệu trên `Primary Node`, thao tác đó sẽ được sao chép sang các `Secondary Node`. Do đó, replication không phải là giải pháp bảo vệ khỏi các lỗi do con người gây ra. Đối với những trường hợp này, bạn cần sử dụng `backups` (sao lưu) và quy trình `phục hồi`.
+
+## 7.3. Relication Process in MongoDB
+
+Khi ứng dụng ghi thay đổi vào `Primary Node`, nó sẽ ghi lại các thay đổi này vào `Oplog` (Operations Log) của nó, bao gồm cả dấu thời gian (timestamp). Các `Secondary Node` sẽ theo dõi `Oplog` của `Primary Node` để sao chép và áp dụng các thay đổi đó vào bản sao của mình.
+
+**Ví dụ minh họa**
+
+Giả sử bạn có một cơ sở dữ liệu chứa thông tin sinh viên với ba bản ghi sinh viên:
+
+```json
+[
+    { "studentId": 1, "name": "John Doe" },
+    { "studentId": 2, "name": "Jane Smith" },
+    { "studentId": 3, "name": "Alice Johnson" }
+]
+```
+
+Bạn thực hiện lệnh sau để xóa tất cả sinh viên:
+
+```javascript
+db.students.deleteMany({})
+```
+
+Trong `Oplog`, lệnh này sẽ được ghi lại như một thao tác duy nhất. Sau đó, các `Secondary Node` sẽ sao chép thao tác này và xóa các bản ghi tương ứng từ cơ sở dữ liệu của chúng.
+
+## 7.4. What is Sharding?
+
+Khi dữ liệu của bạn ngày càng lớn và phần cứng hiện tại không còn đủ khả năng lưu trữ hay xử lý, bạn có thể mở rộng hệ thống theo chiều ngang bằng cách sử dụng Sharding. Sharding là việc phân tán các bộ sưu tập dữ liệu lớn thành nhiều phân mảnh nhỏ hơn và lưu trữ chúng trên nhiều node khác nhau.
+
+**Lợi ích của Sharding**
+
+- **Tăng khả năng lưu trữ**: Bạn có thể lưu trữ nhiều dữ liệu hơn mà không bị giới hạn bởi dung lượng của một node duy nhất.
+- **Tăng hiệu suất**: Phân chia dữ liệu giúp tăng tốc độ đọc và ghi bằng cách phân tán tải công việc cho nhiều node.
+- **Phân vùng địa lý**: Bạn có thể phân vùng dữ liệu theo khu vực. Ví dụ, dữ liệu của khách hàng Mỹ sẽ được lưu trữ trên các shard ở Mỹ, trong khi dữ liệu của khách hàng châu Âu sẽ được lưu trên các shard ở châu Âu.
+
+**Ví dụ về Sharding**
+
+Giả sử bạn có một ứng dụng thương mại điện tử với dữ liệu khách hàng toàn cầu. Bạn có thể phân chia dữ liệu theo khu vực địa lý:
+
+- **Shard 1:** Lưu trữ dữ liệu khách hàng ở Mỹ.
+- **Shard 2:** Lưu trữ dữ liệu khách hàng ở châu Âu.
+- **Shard 3:** Lưu trữ dữ liệu khách hàng ở châu Á.
+
+Điều này giúp cải thiện hiệu suất truy vấn và cung cấp trải nghiệm người dùng tốt hơn.
+
+## 7.5. How Replication and Sharding work?
+
+- **Replication**: Chỉ có Primary Node mới có thể nhận các yêu cầu ghi (insert, update, delete) từ ứng dụng. Khi Primary Node không khả dụng, một Secondary Node sẽ được chọn làm Primary Node mới thông qua quá trình bầu chọn (election).
+- **Sharding**: Dữ liệu được phân mảnh thành các shard nhỏ hơn, mỗi shard có thể là một Replica Set riêng biệt. Khi bạn gửi một truy vấn, MongoDB sẽ xác định shard nào chứa dữ liệu liên quan và chỉ gửi truy vấn đến shard đó, giúp tăng tốc độ truy vấn.
+
+**Quá trình bầu chọn trong Replication**
+
+Quá trình bầu chọn trong MongoDB đảm bảo rằng chỉ có một node trở thành `Primary Node`, giúp tránh hiện tượng "split-brain" (trạng thái mà có nhiều `Primary Node` tồn tại cùng lúc). Các thành viên trong Replica Set sẽ bầu chọn node có dữ liệu cập nhật nhất và độ trễ sao chép tối thiểu để trở thành `Primary Node`.
+
+## 7.6. Summary
+
+- Replication giúp tạo ra nhiều bản sao của dữ liệu, đảm bảo tính khả dụng và dư thừa, nhưng không thể ngăn chặn các thảm họa như xóa nhầm dữ liệu.
+- Sharding giúp mở rộng cơ sở dữ liệu theo chiều ngang, cho phép lưu trữ nhiều dữ liệu hơn và cải thiện hiệu suất đọc/ghi.
+- Replication và Sharding có thể được sử dụng cùng nhau để xây dựng các hệ thống cơ sở dữ liệu lớn, phức tạp và có khả năng mở rộng cao.
+
+Replication và Sharding là hai công cụ quan trọng trong MongoDB, giúp bạn xây dựng các hệ thống cơ sở dữ liệu mạnh mẽ và linh hoạt, phục vụ tốt cho các ứng dụng từ nhỏ đến lớn.
+
+# 8. Access MongoDB with Python
+
+[Tutorial Script](access_mongodb_tutorial.py)
+
+[Hans-on Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvTW9uZ29EQi9MYWIlMjAtJTIwQWNjZXNzaW5nJTIwTW9uZ29EQiUyMHVzaW5nJTIwUHl0aG9uLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTgwOX0.RVsEeRawOv6oZkFJqkTLFQDe4aTWEGyUrcRO2h629lA)
 
