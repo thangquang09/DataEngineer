@@ -26,6 +26,38 @@
   - [4.3. Các lệnh đặc biệt trong CQL Shell](#43-các-lệnh-đặc-biệt-trong-cql-shell)
   - [4.4. Chi tiết về các lệnh CONSISTENCY và COPY](#44-chi-tiết-về-các-lệnh-consistency-và-copy)
 - [5. Hands-on Lab: Using the CQL Shell (cqlsh)](#5-hands-on-lab-using-the-cql-shell-cqlsh)
+- [6. Ngôn ngữ truy vấn Cassandra (CQL) - Các kiểu dữ liệu](#6-ngôn-ngữ-truy-vấn-cassandra-cql---các-kiểu-dữ-liệu)
+  - [6.1. Kiểu dữ liệu tích hợp sẵn](#61-kiểu-dữ-liệu-tích-hợp-sẵn)
+  - [6.2. Kiểu dữ liệu tập hợp](#62-kiểu-dữ-liệu-tập-hợp)
+  - [6.3. Kiểu dữ liệu do người dùng tự định nghĩa](#63-kiểu-dữ-liệu-do-người-dùng-tự-định-nghĩa)
+  - [6.4. Kết luận](#64-kết-luận)
+- [7. Các thao tác với Keyspace trong Apache Cassandra](#7-các-thao-tác-với-keyspace-trong-apache-cassandra)
+- [7.1. Các khái niệm chính](#71-các-khái-niệm-chính)
+  - [7.2. Tạo Keyspace và các yếu tố cần xem xét](#72-tạo-keyspace-và-các-yếu-tố-cần-xem-xét)
+  - [7.3. Replication Factor và Replication Strategy](#73-replication-factor-và-replication-strategy)
+  - [7.4. Sao lưu dữ liệu trong môi trường đa trung tâm dữ liệu](#74-sao-lưu-dữ-liệu-trong-môi-trường-đa-trung-tâm-dữ-liệu)
+  - [7.5. Chỉnh sửa và xóa Keyspace](#75-chỉnh-sửa-và-xóa-keyspace)
+  - [7.6. Kết luận](#76-kết-luận)
+- [8. Các thao tác với bảng trong Apache Cassandra](#8-các-thao-tác-với-bảng-trong-apache-cassandra)
+  - [8.1. Giới thiệu về bảng](#81-giới-thiệu-về-bảng)
+  - [8.2. Cú pháp tạo bảng](#82-cú-pháp-tạo-bảng)
+  - [8.3. Tạo bảng tĩnh và động](#83-tạo-bảng-tĩnh-và-động)
+  - [8.4. Các thuộc tính nâng cao của bảng](#84-các-thuộc-tính-nâng-cao-của-bảng)
+  - [8.5. Ghi dữ liệu và quá trình lưu trữ](#85-ghi-dữ-liệu-và-quá-trình-lưu-trữ)
+  - [8.6. Chỉnh sửa và xóa bảng](#86-chỉnh-sửa-và-xóa-bảng)
+  - [8.7. Kết luận](#87-kết-luận)
+  - [8.8. Hands-on Lab](#88-hands-on-lab)
+- [9. CRUD Operations trong Apache Cassandra (Phần 1: INSERT và UPDATE)](#9-crud-operations-trong-apache-cassandra-phần-1-insert-và-update)
+  - [9.1 Quá trình ghi (Write) trong Cassandra](#91-quá-trình-ghi-write-trong-cassandra)
+  - [9.2 Lệnh INSERT trong Cassandra](#92-lệnh-insert-trong-cassandra)
+  - [9.3 Lệnh UPDATE trong Cassandra](#93-lệnh-update-trong-cassandra)
+  - [9.4. Lightweight Transactions (Giao dịch nhẹ)](#94-lightweight-transactions-giao-dịch-nhẹ)
+  - [9.5. Kết luận](#95-kết-luận)
+- [10. CRUD trong Apache Cassandra – Phần 2: Đọc và Xóa dữ liệu](#10-crud-trong-apache-cassandra--phần-2-đọc-và-xóa-dữ-liệu)
+  - [10.1. Câu lệnh SELECT trong Cassandra](#101-câu-lệnh-select-trong-cassandra)
+  - [10.2. Xóa dữ liệu trong Cassandra](#102-xóa-dữ-liệu-trong-cassandra)
+  - [10.3. Kết luận](#103-kết-luận)
+- [11. Hands-on lab](#11-hands-on-lab)
 
 
 # 1. Tổng quan về Apache Cassandra
@@ -508,3 +540,452 @@ COPY users FROM 'users.csv' WITH HEADER = TRUE;
 
 [Glossary: Cassandra Basic](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQ2Fzc2FuZHJhL0xhYiUyMC0lMjBVc2luZyUyMHRoZSUyMENRTCUyMFNoZWxsLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTczM30.pxRev5SrqlOkblXireacLlxrFVR8bH8UyyMf2qfFJg4)
 
+# 6. Ngôn ngữ truy vấn Cassandra (CQL) - Các kiểu dữ liệu
+
+Khi làm việc với cơ sở dữ liệu **NoSQL Cassandra**, ngôn ngữ truy vấn Cassandra (Cassandra Query Language - CQL) là công cụ quan trọng để tương tác với các cụm Cassandra. Một trong những yếu tố chính trong CQL là các kiểu dữ liệu, giúp chúng ta quản lý và lưu trữ dữ liệu theo cách có cấu trúc.
+
+Hôm nay, chúng ta sẽ tìm hiểu các kiểu dữ liệu trong CQL bao gồm:
+
+- Kiểu dữ liệu tích hợp sẵn (Built-in data types),
+- Kiểu dữ liệu tập hợp (Collection data types),
+- Kiểu dữ liệu do người dùng định nghĩa (User-defined data types - UDTs).
+
+## 6.1. Kiểu dữ liệu tích hợp sẵn
+
+Các kiểu dữ liệu tích hợp sẵn là các kiểu dữ liệu đã được định nghĩa sẵn trong Cassandra. Những kiểu này bao gồm:
+
+- **Ascii**: Chuỗi ký tự ASCII.
+- **Boolean**: Biến Boolean với giá trị true/false.
+- **Decimal, Double, Float**: Các kiểu dữ liệu số, sử dụng cho các phép toán số học.
+- **Int và Bigint**: Kiểu số nguyên, trong đó bigint là số nguyên 64-bit có khả năng lưu trữ dải số lớn hơn int.
+- **Text và Varchar**: Chuỗi ký tự UTF8.
+
+Ngoài ra, Cassandra còn hỗ trợ kiểu dữ liệu **Blob (Binary Large Object)**, cho phép lưu trữ các đối tượng nhị phân lớn như hình ảnh, âm thanh. Lưu ý rằng kích thước của một blob không nên vượt quá 1 MB để tránh gây quá tải cho hệ thống.
+
+**Ví dụ thực tế:**
+
+Giả sử bạn cần lưu trữ thông tin một tập tin hình ảnh của người dùng, bạn có thể sử dụng kiểu dữ liệu blob. Tuy nhiên, nếu kích thước tập tin vượt quá giới hạn 1MB, bạn cần chia nhỏ dữ liệu hoặc tìm một cách lưu trữ khác, như sử dụng hệ thống lưu trữ tệp ngoài.
+
+## 6.2. Kiểu dữ liệu tập hợp
+
+Các kiểu dữ liệu tập hợp trong Cassandra giúp bạn lưu trữ nhiều giá trị trong một cột duy nhất. Điều này đặc biệt hữu ích khi bạn cần quản lý các quan hệ 1-nhiều mà không sử dụng JOIN. Các kiểu dữ liệu tập hợp bao gồm:
+
+- **List**: Danh sách các phần tử, trong đó thứ tự phần tử được duy trì. Ví dụ, khi lưu trữ các công việc mà người dùng đã từng làm, bạn có thể dùng list để lưu chúng theo thứ tự thời gian.
+- **Map**: Cặp giá trị khóa và giá trị, ví dụ như lưu trữ thông tin lịch sử nhập dữ liệu theo ngày.
+- **Set**: Tập hợp các phần tử không trùng lặp và được sắp xếp theo thứ tự. Bạn có thể sử dụng set để lưu trữ các địa chỉ email của người dùng mà không cho phép trùng lặp.
+
+**Ví dụ thực tế:**
+
+Giả sử bạn đang xây dựng một hệ thống quản lý công việc và muốn lưu lại danh sách các công việc mà người dùng đã từng đảm nhiệm. Bạn có thể sử dụng list để lưu trữ các công việc này theo thứ tự thời gian, đảm bảo mỗi lần thêm một công việc mới, hệ thống sẽ giữ nguyên thứ tự đã lưu.
+
+```sql
+ALTER TABLE users ADD jobs list<text>;
+UPDATE users SET jobs = jobs + ['Giáo viên'] WHERE user_id = 123;
+```
+
+## 6.3. Kiểu dữ liệu do người dùng tự định nghĩa
+
+Kiểu dữ liệu do người dùng định nghĩa (UDT) cho phép bạn tạo ra những cấu trúc dữ liệu phức tạp hơn, tương tự như việc lưu trữ một quan hệ 1-một. Ví dụ, bạn có thể lưu trữ một địa chỉ bao gồm số nhà, tên đường, thành phố, v.v. trong một cột duy nhất thay vì phải tạo nhiều cột riêng biệt.
+
+Sau khi tạo kiểu dữ liệu UDT, bạn có thể sử dụng nó để khai báo các cột trong bảng. Điều này giúp đơn giản hóa cấu trúc dữ liệu và tăng hiệu quả quản lý.
+
+**Ví dụ thực tế:**
+
+Giả sử bạn muốn lưu trữ thông tin địa chỉ của người dùng bao gồm các thành phần như số nhà, tên đường và thành phố. Bạn có thể tạo một UDT như sau:
+
+```sql
+CREATE TYPE address (
+  street text,
+  city text,
+  zipcode int
+);
+```
+
+Sau đó, bạn có thể thêm UDT này vào bảng users để lưu trữ địa chỉ:
+
+```sql
+ALTER TABLE users ADD address frozen<address>;
+```
+
+## 6.4. Kết luận
+
+Cassandra hỗ trợ nhiều kiểu dữ liệu khác nhau để phục vụ nhiều nhu cầu lưu trữ khác nhau. Trong đó, **kiểu dữ liệu tích hợp sẵn** là những kiểu cơ bản và dễ hiểu, **kiểu dữ liệu tập hợp** giúp giải quyết các quan hệ 1-nhiều mà không cần `JOIN`, và **UDT** giúp mô hình hóa các quan hệ 1-một với tính linh hoạt cao. Nắm vững các kiểu dữ liệu này sẽ giúp bạn thiết kế cơ sở dữ liệu Cassandra một cách hiệu quả và tối ưu cho các ứng dụng thực tế.
+
+# 7. Các thao tác với Keyspace trong Apache Cassandra
+
+Keyspace là một khái niệm cốt lõi trong cơ sở dữ liệu phân tán Apache Cassandra. Nó tương tự như một "schema" trong các hệ quản trị cơ sở dữ liệu quan hệ (RDBMS). Trước khi tạo bảng, bạn phải định nghĩa Keyspace, vì Cassandra không cung cấp một Keyspace mặc định. Keyspace là nơi chứa các bảng và quyết định cách dữ liệu được phân phối và sao lưu trong cụm Cassandra.
+
+Sau bài giảng này, bạn sẽ hiểu rõ vai trò của Keyspace, cách tạo, chỉnh sửa và xóa Keyspace trong Cassandra, cũng như các khái niệm về replication factor (hệ số sao lưu) và replication strategy (chiến lược sao lưu).
+
+# 7.1. Các khái niệm chính
+
+- **Keyspace**: Chứa nhiều bảng (tables), và mỗi bảng chỉ thuộc về một keyspace duy nhất.
+- **Replication**: Được xác định tại mức keyspace, giúp đảm bảo dữ liệu được sao lưu trên nhiều node (nút) khác nhau để tăng tính an toàn và sẵn sàng của hệ thống.
+- **Replication Factor**: Xác định số lượng bản sao dữ liệu được đặt trên các node khác nhau.
+- **Replication Strategy**: Xác định các node nào trong cụm sẽ chứa các bản sao của dữ liệu.
+
+## 7.2. Tạo Keyspace và các yếu tố cần xem xét
+
+Khi tạo một Keyspace mới, bạn cần chỉ định hai yếu tố chính:
+
+- **Class**: Chỉ định chiến lược sao lưu (replication strategy).
+- **Replication Factor**: Xác định số lượng bản sao tại mỗi trung tâm dữ liệu.
+
+Ví dụ:
+
+Chúng ta tạo một Keyspace với tên **intro_cassandra**, với hệ số sao lưu là 5, trong đó 3 bản sao được đặt tại **datacenter1** và 2 bản sao tại **datacenter2**.
+
+```sql
+CREATE KEYSPACE intro_cassandra
+WITH replication = {
+  'class': 'NetworkTopologyStrategy',
+  'datacenter1': 3,
+  'datacenter2': 2
+};
+```
+
+Sau khi tạo Keyspace, bạn có thể dùng lệnh `DESCRIBE KEYSPACES` hoặc `DESCRIBE intro_cassandra` để kiểm tra Keyspace đã tạo.
+
+## 7.3. Replication Factor và Replication Strategy
+
+- **Replication Factor** xác định số lượng bản sao của dữ liệu sẽ được lưu trên các node khác nhau trong cụm.
+- **Replication Strategy** chỉ định node nào trong cụm sẽ chứa các bản sao đó.
+
+**Hai điều cần lưu ý:**
+
+- Tất cả các bản sao đều quan trọng như nhau trong Cassandra. Không có bản sao chính hay bản sao phụ.
+- Replication Factor không nên vượt quá số lượng node trong cụm Cassandra.
+
+**Ví dụ với một cụm Cassandra 4 node:**
+
+Giả sử cụm có 4 node trong datacenter1 với hệ số sao lưu là 3. Khi dữ liệu ban đầu được phân bổ cho node 1, Cassandra sẽ sao chép dữ liệu lên node 3 và node 4 (do node 2 và node 1 cùng rack, Cassandra sẽ ưu tiên đặt bản sao lên các rack khác nhau).
+
+## 7.4. Sao lưu dữ liệu trong môi trường đa trung tâm dữ liệu
+
+Khi triển khai Cassandra trong môi trường nhiều trung tâm dữ liệu (multidatacenter), bạn có thể chỉ định hệ số sao lưu cho từng trung tâm dữ liệu.
+Ví dụ với 2 trung tâm dữ liệu:
+
+Cụm Cassandra có hai trung tâm dữ liệu, và chúng ta muốn có hệ số sao lưu là 5, trong đó 3 bản sao tại datacenter1 và 2 bản sao tại datacenter2.
+
+```sql
+CREATE KEYSPACE intro_cassandra
+WITH replication = {
+  'class': 'NetworkTopologyStrategy',
+  'datacenter1': 3,
+  'datacenter2': 2
+};
+```
+
+Dữ liệu sẽ được sao chép qua các node khác nhau trong hai trung tâm dữ liệu này dựa trên chiến lược sao lưu và vị trí của các rack.
+
+## 7.5. Chỉnh sửa và xóa Keyspace
+
+- **ALTER KEYSPACE**: Lệnh này cho phép thay đổi các thuộc tính của Keyspace, chẳng hạn như tăng hệ số sao lưu.
+
+    Ví dụ, tăng hệ số sao lưu của **datacenter2** từ 2 lên 3:
+
+    ```sql
+    ALTER KEYSPACE intro_cassandra
+    WITH replication = {
+    'class': 'NetworkTopologyStrategy',
+    'datacenter1': 3,
+    'datacenter2': 3
+    };
+    ```
+
+- **DROP KEYSPACE**: Lệnh này dùng để xóa Keyspace, bao gồm cả các bảng và dữ liệu chứa trong nó.
+
+    ```sql
+    DROP KEYSPACE intro_cassandra;
+    ```
+
+Cassandra sẽ tự động tạo snapshot trước khi xóa Keyspace để có thể khôi phục dữ liệu nếu cần.
+
+## 7.6. Kết luận
+
+Trong Cassandra, Keyspace là nền tảng cho việc quản lý dữ liệu. Việc tạo, chỉnh sửa và xóa Keyspace đòi hỏi sự hiểu biết về các yếu tố như hệ số sao lưu và chiến lược sao lưu. Với chiến lược đúng, bạn có thể đảm bảo dữ liệu được sao lưu hiệu quả, giảm thiểu rủi ro mất mát dữ liệu, và tăng tính khả dụng của hệ thống.
+
+- **Replication Factor** xác định số lượng bản sao dữ liệu trên các node khác nhau.
+- **Replication Strategy** xác định node nào sẽ chứa các bản sao.
+- Các thao tác cơ bản với Keyspace bao gồm: `CREATE KEYSPACE`, `ALTER KEYSPACE`, và `DROP KEYSPACE`.
+
+**Ví dụ thực tế**: Giả sử bạn đang xây dựng một hệ thống thương mại điện tử phân tán với khách hàng đến từ nhiều khu vực khác nhau. Bạn có thể tạo Keyspace để lưu trữ dữ liệu về giao dịch, với việc sao lưu dữ liệu trên nhiều trung tâm dữ liệu để đảm bảo độ sẵn sàng cao. Mỗi khi có sự cố xảy ra với một trung tâm dữ liệu, hệ thống vẫn có thể phục hồi từ bản sao ở các trung tâm khác.
+
+# 8. Các thao tác với bảng trong Apache Cassandra
+
+## 8.1. Giới thiệu về bảng
+
+Trong Apache Cassandra, dữ liệu được tổ chức và lưu trữ dưới dạng bảng. Bảng không chỉ lưu dữ liệu mà còn định nghĩa cấu trúc lưu trữ của dữ liệu trên cấp độ cụm (cluster) và node. Trước khi khai báo bảng, bạn phải tạo **keyspace**, vì bảng sẽ luôn được tạo trong một keyspace đã tồn tại.
+
+**Ví dụ thực tế:**
+
+Giả sử bạn đang xây dựng một hệ thống quản lý người dùng với hàng triệu bản ghi. Bạn sẽ cần một keyspace chứa bảng thông tin người dùng, nơi bảng này định nghĩa cấu trúc dữ liệu của từng người dùng và cách dữ liệu sẽ được phân phối và lưu trữ qua các node trong hệ thống Cassandra.
+
+## 8.2. Cú pháp tạo bảng
+
+Cassandra sử dụng cú pháp CREATE TABLE để tạo bảng với cú pháp tổng quát như sau:
+
+```sql
+CREATE TABLE [IF NOT EXISTS] keyspace_name.table_name (
+    column1 datatype,
+    column2 datatype,
+    ...
+    PRIMARY KEY (column1)
+);
+
+    IF NOT EXISTS: Tùy chọn này ngăn việc tạo bảng mới nếu bảng đã tồn tại, tránh việc hiển thị lỗi khi bảng đã được tạo trước đó.
+    PRIMARY KEY: Xác định khóa chính của bảng.
+```
+
+Ví dụ:
+
+```sql
+CREATE TABLE IF NOT EXISTS user_data (
+    username TEXT PRIMARY KEY,
+    email TEXT,
+    age INT
+);
+```
+
+Trong ví dụ trên, bảng `user_data` chứa các thông tin về người dùng, với username là khóa chính.
+
+## 8.3. Tạo bảng tĩnh và động
+
+- **Bảng tĩnh**: Khóa chính chỉ chứa một khóa phân vùng (partition key).
+- **Bảng động**: Khóa chính bao gồm cả khóa phân vùng và khóa sắp xếp (clustering key).
+
+Ví dụ về bảng tĩnh:
+
+```sql
+CREATE TABLE user_profile (
+    username TEXT PRIMARY KEY,
+    name TEXT,
+    age INT
+);
+```
+
+Ví dụ về bảng động:
+
+```sql
+CREATE TABLE group_members (
+    groupid UUID,
+    username TEXT STATIC,
+    PRIMARY KEY (groupid, username)
+);
+```
+
+Ở đây, bảng `group_members` có khóa chính bao gồm `groupid` làm khóa phân vùng và `username` làm khóa sắp xếp.
+
+## 8.4. Các thuộc tính nâng cao của bảng
+
+![describe_table](describe_table.png)
+
+Một số thuộc tính và tùy chọn quan trọng của bảng trong Cassandra bao gồm:
+
+- Clustering Order: Mặc định, dữ liệu trong partition được sắp xếp theo khóa sắp xếp (clustering key) theo thứ tự tăng dần.
+
+    Ví dụ:
+
+    ```sql
+    CREATE TABLE group_members (
+        groupid UUID,
+        username TEXT,
+        PRIMARY KEY (groupid, username)
+    ) WITH CLUSTERING ORDER BY (username DESC);
+    ```
+
+- Time-To-Live (TTL): Cho phép đặt thời gian tồn tại cho dữ liệu. Sau khi hết thời gian này, dữ liệu sẽ bị xóa tự động.
+
+    Ví dụ:
+
+    ```sql
+    INSERT INTO user_data (username, email, age) VALUES ('user1', 'user1@example.com', 25) USING TTL 300;
+    ```
+
+    Dữ liệu này sẽ bị xóa sau 300 giây (5 phút).
+
+## 8.5. Ghi dữ liệu và quá trình lưu trữ
+
+Dữ liệu ghi vào bảng được lưu trên đĩa trong ba trường hợp:
+
+- Khi memtable đầy,
+- Khi commit log đầy,
+- Hoặc theo khoảng thời gian nhất định (được cấu hình riêng cho mỗi bảng).
+
+Mặc định, Cassandra không kích hoạt việc lưu dữ liệu theo khoảng thời gian.
+
+## 8.6. Chỉnh sửa và xóa bảng
+
+- **ALTER TABLE**: Dùng để thêm hoặc xóa cột, đổi tên cột, hoặc thay đổi các thuộc tính của bảng.
+
+    Ví dụ:
+
+    ```sql
+    ALTER TABLE user_data ADD phone_number TEXT;
+    ```
+    **Lưu ý rằng các thay đổi này chỉ áp dụng cho các cột thông thường, không áp dụng cho cột khóa chính. Nếu muốn thay đổi khóa chính, bạn cần tạo bảng mới và nhập lại dữ liệu.**
+
+- **TRUNCATE**: Xóa tất cả dữ liệu trong bảng nhưng không xóa định nghĩa bảng.
+
+- **DROP**: Xóa toàn bộ bảng cùng với dữ liệu và định nghĩa.
+
+Trước khi xóa hoặc truncate bảng, Cassandra tự động chụp lại ảnh (snapshot) của dữ liệu để làm bản sao lưu, giúp khôi phục dữ liệu khi cần.
+
+## 8.7. Kết luận
+
+- Bảng trong Cassandra chứa dữ liệu và có thể bao gồm các cột tĩnh hoặc động.
+- Khóa chính (PRIMARY KEY) quyết định cách dữ liệu được phân phối và lưu trữ trên các node.
+- Bạn có thể thêm TTL để tự động xóa dữ liệu sau một khoảng thời gian xác định.
+- Các thao tác chỉnh sửa bảng như thêm, xóa cột chỉ áp dụng với cột thường, không thể thay đổi khóa chính.
+
+## 8.8. Hands-on Lab
+
+[Keyspace Operations](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQ2Fzc2FuZHJhL0xhYiUyMC0lMjBLZXlzcGFjZV9PcGVyYXRpb25zLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTc1Nn0.xRbO06VRQWxvWvQ_afsB-EkMQUrmuhTxMDu1SsWKTVk)
+
+[Cassandra Table Operations](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQ2Fzc2FuZHJhL0xhYiUyMC0lMjBUYWJsZV9PcGVyYXRpb25zLm1kIiwidG9vbF90eXBlIjoidGhlaWFkb2NrZXIiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTcyNDI1OTc0MX0.E_jSYrr0dH6UcA0nr_MPGrq7kaUrHuQIPYs9-IYudtM)
+
+# 9. CRUD Operations trong Apache Cassandra (Phần 1: INSERT và UPDATE)
+
+## 9.1 Quá trình ghi (Write) trong Cassandra
+
+**a. Ghi dữ liệu tại cấp cụm (Cluster Level)**
+
+![write_operation_node_level](write_operation_cluster_level.png)
+
+**Trong Cassandra, khi một thao tác ghi diễn ra:**
+
+Node nhận yêu cầu ghi sẽ đóng vai trò coordinator (điều phối viên), chịu trách nhiệm hoàn tất thao tác và trả kết quả về cho người dùng.
+Dữ liệu sẽ được ghi vào tất cả các node chứa bản sao (replicas) của phân vùng, nhưng để thành công, Cassandra cần nhận được xác nhận từ một số lượng node tối thiểu dựa trên yếu tố consistency (độ nhất quán).
+
+**Ví dụ:**
+
+Keyspace có **Replication Factor = 3** và thao tác ghi có **Consistency = 2**.
+Nếu phân vùng dữ liệu nằm trên các node 1, 2, và 3, và yêu cầu ghi đến node 4, thì node 4 sẽ gửi dữ liệu đến node 1, 2, và 3. Nếu node 2 không khả dụng, chỉ cần node 1 và 3 gửi xác nhận để đảm bảo đủ mức Consistency.
+
+**b. Ghi dữ liệu tại cấp node (Node Level)**
+
+![write_operation_cluster_level](write_operation_node_level.png)
+
+- **Không cần đọc trước khi ghi**: Cassandra không cần kiểm tra dữ liệu hiện có trước khi thực hiện ghi, điều này giúp tối ưu hóa tốc độ.
+- **Dữ liệu ghi vào bộ nhớ (Memtable)** và sau đó được ghi vào ổ đĩa dưới dạng các file SSTables. Khi bộ nhớ đầy, dữ liệu sẽ được chuyển từ bộ nhớ ra đĩa.
+- **Mỗi thao tác ghi được gắn một timestamp**, giúp hệ thống quyết định dữ liệu mới nhất.
+
+
+## 9.2 Lệnh INSERT trong Cassandra
+
+**a. Quy tắc chung cho lệnh INSERT**
+
+- Lệnh INSERT yêu cầu chỉ định khóa chính (primary key) đầy đủ. Điều này có nghĩa là mỗi lần ghi là cho từng bản ghi một.
+- Do Cassandra không đọc dữ liệu trước khi ghi, nên thao tác INSERT có thể hoạt động như UPSERT (cập nhật nếu bản ghi đã tồn tại).
+- Lệnh INSERT yêu cầu cung cấp giá trị cho các cột trong primary key, nhưng các cột khác không bắt buộc phải có dữ liệu.
+- Có thể sử dụng Time-To-Live (TTL) cho dữ liệu, giúp xóa dữ liệu sau một khoảng thời gian định trước.
+
+**b. Ví dụ:**
+
+- Thêm hai người dùng vào nhóm làm bánh (group 12): Các cột bắt buộc như `username`, `groupid` phải được cung cấp.
+- Thêm người dùng với TTL: Ví dụ, thêm một người dùng vào nhóm 25 với TTL 10 giây, sau 10 giây dữ liệu này sẽ không còn khả dụng để truy vấn.
+
+## 9.3 Lệnh UPDATE trong Cassandra
+
+**a. Quy tắc cho lệnh UPDATE**
+
+Lệnh `UPDATE` có thể sử dụng để cập nhật dữ liệu, chẳng hạn như cập nhật tuổi người dùng trong nhóm.
+Static column có thể được cập nhật mà không cần chỉ định khóa chính đầy đủ, chỉ cần chỉ định khóa phân vùng (partition key).
+
+**b. Ví dụ:**
+
+- Cập nhật tên nhóm 45: Bạn có thể cập nhật tên nhóm chỉ với **khóa phân vùng.**
+- Cập nhật tuổi người dùng trong nhóm 12: Khi chạy `SELECT`, bạn sẽ thấy dữ liệu đã được cập nhật.
+
+## 9.4. Lightweight Transactions (Giao dịch nhẹ)
+
+**a. Chức năng của Lightweight Transactions**
+
+- **Lightweight Transactions (LWT)** cho phép Cassandra thực hiện kiểm tra trước khi ghi. Điều này giúp ngăn chặn việc ghi đè dữ liệu không mong muốn.
+- Sử dụng cú pháp `IF` để kiểm tra trước khi ghi.
+
+**b. Ví dụ:**
+
+- Chỉ cập nhật tuổi người dùng nếu dữ liệu đã tồn tại và tuổi hiện tại thỏa mãn điều kiện cụ thể.
+- `INSERT IF NOT EXISTS`: Chỉ thêm dữ liệu nếu bản ghi chưa tồn tại.
+
+**c. Nhược điểm của Lightweight Transactions:**
+
+Giao dịch nhẹ chậm hơn khoảng 4 lần so với thao tác ghi thông thường, vì vậy chỉ nên sử dụng khi thật sự cần thiết.
+
+## 9.5. Kết luận
+
+- `INSERT` và `UPDATE` trong Cassandra có thể hoạt động tương tự nhau vì Cassandra không đọc dữ liệu trước khi ghi.
+- **Lightweight Transactions** cung cấp cơ chế kiểm tra trước khi ghi, nhưng gây ảnh hưởng lớn đến hiệu suất.
+- Khi ghi dữ liệu, Cassandra gửi dữ liệu đến tất cả các bản sao trong cụm, và chỉ yêu cầu xác nhận từ một số node tối thiểu dựa trên consistency level.
+
+**Ví dụ thực tế:**
+
+Trong một hệ thống thương mại điện tử, bạn có thể sử dụng Cassandra để quản lý thông tin người dùng. Lệnh INSERT sẽ tạo tài khoản người dùng mới, trong khi UPDATE sẽ được dùng để cập nhật thông tin tài khoản như địa chỉ giao hàng hoặc thông tin thanh toán. Lightweight Transactions có thể được dùng để đảm bảo không có tài khoản trùng lặp khi thêm người dùng mới.
+
+# 10. CRUD trong Apache Cassandra – Phần 2: Đọc và Xóa dữ liệu
+
+Khi bạn thực hiện một thao tác đọc trong Cassandra, nút nhận yêu cầu đọc sẽ trở thành coordinator (nút điều phối), có trách nhiệm thực hiện và hoàn thành thao tác đọc. Ví dụ, nếu thao tác đọc được gửi đến node 4, thì node này sẽ đóng vai trò là coordinator của thao tác đó.
+
+Coordinator sẽ chỉ gửi yêu cầu đến số lượng node bằng với consistency level (mức độ nhất quán) đã được cấu hình. Ví dụ: nếu mức độ nhất quán là 2, thì chỉ có 2 trong số 3 node lưu trữ bản sao của dữ liệu được liên hệ để trả về kết quả. Khi các node phản hồi, coordinator sẽ xử lý và đồng bộ hóa dữ liệu dựa trên timestamps (dấu thời gian) để quyết định dữ liệu mới nhất, sau đó trả về kết quả cho người dùng.
+
+## 10.1. Câu lệnh SELECT trong Cassandra
+
+Để đọc dữ liệu trong Cassandra, chúng ta sử dụng câu lệnh `SELECT`. Dưới đây là một số quy tắc cần ghi nhớ khi sử dụng `SELECT` để đảm bảo hiệu suất tốt nhất:
+
+- **Bắt đầu bằng khóa phân vùng (partition key)**: Mỗi truy vấn đọc phải bắt đầu bằng khóa phân vùng để giới hạn phạm vi dữ liệu cần đọc, điều này giúp chỉ các bản sao tương ứng với phân vùng đó được truy vấn.
+
+- **Theo thứ tự các trường của khóa chính**: Đảm bảo rằng bạn tuân theo thứ tự của các trường khóa chính để có hiệu suất tối ưu. Ví dụ:
+    - Nếu khóa chính gồm một khóa phân vùng và hai khóa phân cụm (clustering key), truy vấn theo thứ tự này sẽ có hiệu suất tốt hơn.
+
+Một số thao tác được cho là **OK**:
+
+- Lọc dựa trên giá trị khóa phân vùng.
+- Lọc kết hợp khóa phân vùng và khóa phân cụm thứ nhất, thứ hai, v.v.
+
+Các thao tác **không được khuyến nghị**:
+
+- Không lọc tất cả dữ liệu: Việc truy vấn toàn bộ dữ liệu trong bảng (SELECT *) có thể dẫn đến việc gửi yêu cầu đến tất cả các node trong cluster, gây ảnh hưởng xấu đến hiệu suất.
+- Không lọc theo cột thường (regular column): Nếu bạn cố gắng lọc theo một cột thường (không phải là một phần của khóa chính), Cassandra sẽ trả về lỗi.
+
+![OK_and_not_OK](OK_and_not_OK.png)
+
+![secondary_index](secondary_index.png)
+
+**Ví dụ thực tế:**
+
+Giả sử bạn có một bảng lưu trữ thông tin nhóm với khóa chính gồm `group ID` và `username`. Khi bạn thực hiện truy vấn dựa trên `group ID` hoặc kết hợp với `username`, kết quả sẽ trả về nhanh chóng và chính xác.
+
+Ngược lại, nếu bạn cố gắng lọc theo cột `age` (một cột thường), hệ thống sẽ trả về lỗi. Để giải quyết điều này, bạn có thể tạo chỉ mục (index) trên cột `age`. Tuy nhiên, hiệu suất tốt nhất vẫn đạt được khi bạn kết hợp khóa phân vùng `group ID` trong truy vấn cùng với cột `age`.
+
+## 10.2. Xóa dữ liệu trong Cassandra
+
+Trong Cassandra, bạn có thể xóa dữ liệu theo nhiều cách khác nhau:
+
+- **Xóa theo khóa chính** : Bạn có thể xóa một bản ghi cụ thể dựa trên khóa chính đầy đủ (full primary key).
+- **Xóa một cell**: Bạn cũng có thể xóa một cell cụ thể trong một bản ghi, ví dụ, xóa cột `age` của một người dùng.
+
+Ngoài ra, bạn có thể xóa dữ liệu ở mức độ lớn hơn:
+
+- **Xóa theo phạm vi (range)**: Ví dụ, nếu bảng của bạn chứa dữ liệu từ các cảm biến (sensor ID) và dữ liệu được phân cụm theo thời gian, bạn có thể xóa tất cả các bản ghi từ 1:00 PM đến 3:00 PM cho một cảm biến cụ thể.
+- **Xóa một phân vùng (partition)**: Điều này xóa toàn bộ dữ liệu thuộc về một khóa phân vùng nhất định.
+
+**Cảnh báo khi xóa dữ liệu**
+
+Việc xóa dữ liệu trong Cassandra không đơn giản như trong cơ sở dữ liệu quan hệ. Cassandra sử dụng tombstone để ghi nhận rằng dữ liệu đã bị xóa. Tuy nhiên, dữ liệu thực tế vẫn tồn tại trên ổ đĩa trong một khoảng thời gian cấu hình được gọi là gc_grace_seconds (thời gian mặc định là 10 ngày). Trong khoảng thời gian này, hệ thống vẫn có thể đồng bộ hóa và đảm bảo rằng dữ liệu đã xóa được cập nhật đúng trên tất cả các node.
+
+**Tombstone là gì?**
+
+- Tombstone là một giá trị đặc biệt được ghi vào hệ thống để đánh dấu rằng một bản ghi đã bị xóa. Dữ liệu được ghi với dấu thời gian của thao tác xóa (T1). Khi một yêu cầu đọc đến, Cassandra sẽ so sánh các dấu thời gian của dữ liệu từ các node khác nhau để quyết định dữ liệu nào mới nhất. Nếu một node chưa nhận được thao tác xóa và trả về dữ liệu cũ với dấu thời gian T0, coordinator sẽ chọn dữ liệu với dấu thời gian mới nhất (T1) và quyết định rằng bản ghi đã bị xóa.
+
+## 10.3. Kết luận
+
+- Đọc trong Cassandra chỉ liên quan đến số lượng node theo mức độ nhất quán đã được cấu hình.
+- Xóa dữ liệu cần thận trọng, vì có thể ảnh hưởng đến hiệu suất hệ thống, đặc biệt trong môi trường phân tán.
+- Tombstones giúp ghi nhận các thao tác xóa, nhưng chúng cần thời gian để được loại bỏ khỏi hệ thống, gây ra nguy cơ ảnh hưởng đến hiệu suất nếu sử dụng quá nhiều.
+
+**Ví dụ thực tế:** Giả sử bạn có một ứng dụng theo dõi cảm biến và cần xóa dữ liệu từ một cảm biến giữa 1:00 PM và 3:00 PM. Bạn có thể thực hiện điều này bằng cách sử dụng câu lệnh xóa phạm vi dựa trên thời gian và khóa phân vùng. Tuy nhiên, hãy cân nhắc tần suất xóa dữ liệu và cấu hình hệ thống để tránh tích lũy quá nhiều tombstone, dẫn đến tình trạng quá tải.
+
+# 11. Hands-on lab
+
+[Lab Instruction](https://author-ide.skills.network/render?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZF9pbnN0cnVjdGlvbnNfdXJsIjoiaHR0cHM6Ly9jZi1jb3Vyc2VzLWRhdGEuczMudXMuY2xvdWQtb2JqZWN0LXN0b3JhZ2UuYXBwZG9tYWluLmNsb3VkL0lCTS1EQjAxNTFFTi1Ta2lsbHNOZXR3b3JrL2xhYnMvQ2Fzc2FuZHJhL0xhYiUyMC0lMjBDUlVEX09wZXJhdGlvbnMubWQiLCJ0b29sX3R5cGUiOiJ0aGVpYWRvY2tlciIsImFkbWluIjpmYWxzZSwiaWF0IjoxNzI0MjU5NzQ3fQ.h7hLanOaYH7rAkXNbjJS-pJWto7Cb3WpKpWCpDCzz9s)
