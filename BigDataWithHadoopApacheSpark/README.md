@@ -87,3 +87,50 @@ Dự báo của **Statista** cho thấy đến năm 2030, số lượng thiết 
 - Các thiết bị IoT liên tục tạo ra dữ liệu khổng lồ, và Big Data giúp phân tích dữ liệu này để tối ưu hóa trải nghiệm khách hàng và hiệu suất kinh doanh.
 
 **Ví dụ thực tế**: Một công ty bảo hiểm có thể sử dụng dữ liệu từ thiết bị IoT như cảm biến trong xe hơi để theo dõi thói quen lái xe của khách hàng. Dựa trên các dữ liệu này, công ty có thể cung cấp chính sách bảo hiểm cá nhân hóa, phù hợp với từng khách hàng, từ đó không chỉ tối ưu hóa chi phí mà còn tăng sự hài lòng của khách hàng.
+
+# 3. Xử lý song song và khả năng mở rộng cho Big Data
+
+## 3.1. Tại sao Big Data cần xử lý song song?
+
+Big Data có khối lượng dữ liệu rất lớn, không thể xử lý trên một máy tính đơn lẻ. Để giải quyết bài toán này, cần phải chia dữ liệu và công việc thành nhiều phần nhỏ hơn, để các máy tính khác nhau có thể xử lý cùng lúc, từ đó rút ngắn thời gian xử lý. Đây chính là xử lý song song.
+
+## 3.2. So sánh giữ xử lý tuyến tính và xử lý song song
+
+![linear_parallel](linear_parallel.png)
+
+**Xử lý tuyến tính (Linear Processing):** Là phương pháp truyền thống, trong đó các câu lệnh được thực thi theo tuần tự. Mỗi lệnh chỉ được thực hiện sau khi lệnh trước đó hoàn thành. Điều này phù hợp cho các tác vụ nhỏ, nhưng không hiệu quả với các bài toán lớn như Big Data, vì thời gian xử lý kéo dài và yêu cầu nhiều tài nguyên hệ thống.
+
+- **Ví dụ:** Hãy tưởng tượng bạn cần xử lý một tập dữ liệu lớn trên một máy tính. Máy phải thực hiện từng bước một cho đến khi hoàn thành. Nếu gặp lỗi ở giữa quá trình, bạn phải bắt đầu lại từ đầu.
+
+**Xử lý song song (Parallel Processing):** Ở đây, dữ liệu và công việc được chia thành nhiều phần và phân phối cho nhiều máy tính xử lý đồng thời. Nếu có lỗi xảy ra, chỉ cần xử lý lại phần bị lỗi mà không cần phải chạy lại toàn bộ quá trình.
+
+- **Ví dụ:** Với một tập dữ liệu lớn, thay vì xử lý tuần tự trên một máy, bạn chia tập dữ liệu ra nhiều phần và phân bổ chúng cho nhiều máy khác nhau để xử lý cùng lúc.
+
+![not_easy_parallel](not_easy_parallel.png)
+
+## 3.3. Tại sao xử lý song song phù hợp Big Data
+
+- **Rút ngắn thời gian xử lý:** Khi các tác vụ được phân chia và xử lý trên nhiều máy tính, thời gian xử lý giảm đáng kể so với xử lý tuyến tính.
+- **Giảm yêu cầu về bộ nhớ và tài nguyên:** Các tác vụ được chia nhỏ và thực hiện trên nhiều máy khác nhau, mỗi máy chỉ cần một phần tài nguyên để xử lý dữ liệu.
+- **Linh hoạt trong mở rộng hệ thống:** Có thể dễ dàng thêm hoặc bớt các máy tính (gọi là các nút) khi cần, giúp giảm chi phí hạ tầng.
+
+**KHẢ NĂNG MỞ RỘNG VÀ ĐỘNG LỰC CHO MỞ RỘNG NGANG**
+
+- Khi dữ liệu ngày càng lớn, bạn có thể nâng cấp máy tính bằng cách mở rộng dọc (Scaling Up), tức là tăng cường sức mạnh cho một máy tính đơn lẻ. Tuy nhiên, phương pháp này sẽ sớm gặp giới hạn khi dữ liệu vượt quá khả năng của máy tính, và chi phí để nâng cấp sẽ rất lớn.
+- Mở rộng ngang (Horizontal Scaling): Thay vì nâng cấp một máy tính, bạn có thể thêm nhiều máy tính có năng lực tương tự để tạo thành một cụm máy tính (Cluster), giúp xử lý khối lượng dữ liệu lớn hơn.
+
+- Ví dụ: Trong các cụm máy tính xử lý song song, nếu một tác vụ cần xử lý trên 1 TB dữ liệu, bạn có thể chia dữ liệu này ra thành các phần nhỏ và phân phối cho nhiều máy tính xử lý độc lập.
+
+## 3.4. Tính toán “Embarrassingly Parallel” và tính chịu lỗi "Fault Tolerance"
+
+**Embarrassingly Parallel** là các bài toán có thể dễ dàng được chia nhỏ và xử lý độc lập trên nhiều máy tính mà không cần sự phối hợp giữa chúng. Nếu một tác vụ gặp lỗi, nó không ảnh hưởng đến các tác vụ khác.
+  - **Ví dụ thực tế:** Bạn cần thay đổi định dạng ngày tháng trong một tập dữ liệu lớn. Bạn có thể chia tập dữ liệu này thành nhiều phần nhỏ và xử lý trên các máy khác nhau. Nếu một phần gặp lỗi, chỉ cần xử lý lại phần đó mà không ảnh hưởng đến các phần còn lại.
+
+Trong hệ thống xử lý dữ liệu lớn, các sự cố như hỏng phần cứng, mất kết nối có thể xảy ra. Hệ thống cần có khả năng chịu lỗi để tiếp tục hoạt động mà không bị gián đoạn. Điều này được thực hiện bằng cách lưu trữ bản sao dữ liệu trên nhiều máy khác nhau.
+
+- **Ví dụ:** Giả sử bạn có ba phân vùng dữ liệu P1, P2, P3 trên một máy tính. Nếu máy này bị hỏng, các bản sao của các phân vùng này đã được lưu trữ trên các máy khác trong cụm. Bạn có thể thêm một máy mới và khôi phục dữ liệu từ các bản sao này.
+
+## 3.5. Đưa tính toán đến dữ liệu
+
+Trong hệ sinh thái Hadoop, khái niệm "đưa tính toán đến dữ liệu" là một ý tưởng cốt lõi. Thay vì di chuyển dữ liệu lớn giữa các nút, hệ thống sẽ thực hiện tính toán ngay tại vị trí mà dữ liệu đang được lưu trữ. Kết quả tính toán cũng sẽ được lưu ngay tại máy đó, giúp giảm thời gian và chi phí liên quan đến việc truyền dữ liệu.
+
